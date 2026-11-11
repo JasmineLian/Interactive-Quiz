@@ -451,7 +451,19 @@ $("#btnPrev").onclick = () => { if(S.cur>0){ S.cur--; renderQ(); } };
 $("#btnNext").onclick = () => { if(S.cur<S.qs.length-1){ S.cur++; renderQ(); } };
 $("#btnSubmit").onclick = () => {
   const left = S.ans.filter(a=>!a.length).length;
-  confirmBox("確認交卷", left ? `還有 ${left} 題未作答，確定要交卷嗎？` : "確定要交卷嗎？交卷後無法修改。", "交卷", () => { send(); });
+  const locked = meta.unitsLocked && (meta.units||[]).length;
+  const box = "width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;font:inherit";
+  openModal("確認交卷", (left ? `還有 ${left} 題未作答。` : "") + "請確認姓名與單位，交卷後無法修改。",
+    `<label class="f" style="margin-top:0">姓名</label><input type="text" id="cfName" maxlength="50" value="${esc(S.name)}" style="${box}">
+     <label class="f">單位</label>` + (locked
+      ? `<select id="cfUnit">${meta.units.map(u=>`<option value="${esc(u)}" ${u===S.unit?"selected":""}>${esc(u)}</option>`).join("")}</select>`
+      : `<input type="text" id="cfUnit" maxlength="50" value="${esc(S.unit)}" style="${box}">`) + `<div class="err" id="cfErr"></div>`,
+    [{text:"返回作答"}, {text:"交卷", cls:"primary", fn: () => {
+      const n = $("#cfName").value.trim(), u = $("#cfUnit").value.trim();
+      if(!n || !u){ $("#cfErr").textContent = "姓名與單位不可空白"; return true; }
+      S.name = n; S.unit = u; $("#mName").textContent = n; $("#mUnit").textContent = u;
+      send();
+    }}]);
 };
 
 function payload(){
