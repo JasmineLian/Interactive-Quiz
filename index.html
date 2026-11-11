@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>互動問答測驗</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f3ee; --card:#fff; --ink:#1f2a2e; --muted:#6b7478; --line:#e3dfd6;
+  --brand:#2f6f5e; --brand-soft:#e4efe9; --ok:#2f7d4f; --ok-soft:#e5f3ea;
+  --bad:#b4483c; --bad-soft:#f8e7e4; --warn:#a46a14;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans TC",system-ui,sans-serif;font-size:16px;line-height:1.6}
+.wrap{max-width:760px;margin:0 auto;padding:24px 16px 64px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px}
+header.top h1{font-size:20px;margin:0;font-weight:700;letter-spacing:.02em}
+.tabs{display:flex;gap:4px;background:#ebe7de;padding:4px;border-radius:10px}
+.tabs button{border:0;background:transparent;padding:6px 12px;border-radius:7px;font:inherit;font-size:14px;color:var(--muted);cursor:pointer}
+.tabs button.on{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px;margin-bottom:16px}
+h2{font-size:18px;margin:0 0 4px}
+.sub{color:var(--muted);font-size:14px;margin:0 0 20px}
+label.f{display:block;font-size:14px;font-weight:500;margin:14px 0 6px}
+input[type=text],select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;font:inherit;background:#fff;color:var(--ink)}
+input[type=text]:focus,select:focus,textarea:focus{outline:2px solid var(--brand-soft);border-color:var(--brand)}
+textarea{resize:vertical;min-height:70px}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;color:var(--ink);padding:9px 16px;border-radius:9px;font:inherit;font-size:15px;cursor:pointer}
+.btn:hover{background:#faf8f4}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn.danger{color:var(--bad)}
+.btn.sm{padding:5px 10px;font-size:13px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.row.end{justify-content:flex-end}
+.between{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.err{color:var(--bad);font-size:14px;min-height:20px;margin-top:8px}
+.meta{display:flex;gap:16px;flex-wrap:wrap;font-size:14px;color:var(--muted);background:var(--brand-soft);padding:10px 14px;border-radius:10px;margin-bottom:16px}
+.meta b{color:var(--ink);font-weight:500}
+.progress{height:6px;background:#ebe7de;border-radius:6px;overflow:hidden;margin:6px 0 20px}
+.progress i{display:block;height:100%;background:var(--brand);transition:width .25s}
+.qtype{display:inline-block;font-size:12px;padding:2px 8px;border-radius:20px;background:#ebe7de;color:var(--muted);margin-bottom:8px}
+.qtext{font-size:18px;font-weight:500;margin:0 0 16px}
+.opt{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:border-color .15s,background .15s}
+.opt:hover{border-color:#c9c3b6}
+.opt.sel{border-color:var(--brand);background:var(--brand-soft)}
+.opt input{margin-top:5px;accent-color:var(--brand)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.dots{display:flex;gap:6px;flex-wrap:wrap;margin-top:16px}
+.dots button{width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:#fff;font:inherit;font-size:13px;cursor:pointer;color:var(--muted)}
+.dots button.done{background:var(--brand-soft);border-color:var(--brand);color:var(--brand)}
+.dots button.cur{outline:2px solid var(--brand);outline-offset:1px}
+.score{font-size:48px;font-weight:700;color:var(--brand);line-height:1.1}
+.review{border-top:1px solid var(--line);padding-top:16px;margin-top:16px}
+.review .item{margin-bottom:18px}
+.tag{font-size:12px;padding:2px 8px;border-radius:20px;font-weight:500}
+.tag.ok{background:var(--ok-soft);color:var(--ok)}
+.tag.bad{background:var(--bad-soft);color:var(--bad)}
+.explain{font-size:14px;color:var(--muted);background:#faf8f4;padding:8px 12px;border-radius:8px;margin-top:6px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:500;font-size:13px}
+.qedit{border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:10px}
+.qedit .opts .orow{display:flex;gap:8px;align-items:center;margin-bottom:6px}
+.qedit .opts .orow input[type=text]{flex:1}
+.hint{font-size:13px;color:var(--muted)}
+.empty{color:var(--muted);text-align:center;padding:24px 0}
+.modal{position:fixed;inset:0;background:rgba(20,25,27,.45);display:flex;align-items:center;justify-content:center;padding:16px;z-index:10}
+.modal .box{background:#fff;border-radius:14px;padding:22px;max-width:620px;width:100%;max-height:85vh;display:flex;flex-direction:column;gap:12px}
+.modal textarea{flex:1;min-height:240px;font-family:ui-monospace,Menlo,monospace;font-size:12px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:9px;font-size:14px;z-index:20;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+.hidden{display:none!important}
+@media (max-width:520px){.card{padding:18px}.qtext{font-size:17px}header.top{flex-direction:column;align-items:flex-start}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1 id="appTitle">互動問答測驗</h1>
+    <span class="tag ok hidden" id="adminBadge" style="margin-left:auto">管理員</span>
+    <nav class="tabs hidden" id="navTabs">
+      <button data-tab="quiz" class="on">作答</button>
+      <button data-tab="records">作答紀錄</button>
+      <button data-tab="bank">題庫管理</button>
+      <button id="btnLogout" style="color:var(--bad)">登出</button>
+    </nav>
+  </header>
+
+  <!-- 作答 -->
+  <section id="tab-quiz">
+    <div class="card" id="vLogin">
+      <h2>登入</h2>
+      <p class="sub">請填寫姓名與單位，登入時間會自動記錄。</p>
+      <form id="loginForm" autocomplete="off">
+        <label class="f" for="inName">姓名</label>
+        <input type="text" id="inName" placeholder="請輸入姓名" maxlength="50">
+        <label class="f" for="inUnit" id="lblUnit">單位</label>
+        <input type="text" id="inUnit" list="unitList" placeholder="選擇或輸入單位" maxlength="50">
+        <datalist id="unitList"></datalist>
+        <select id="inUnitSel" class="hidden"></select>
+        <label class="f">登入時間</label>
+        <div id="nowClock" class="hint" style="font-size:15px;color:var(--ink)"></div>
+        <div class="err" id="loginErr"></div>
+        <div class="between"><span class="hint" id="bankNotice">題目載入中…</span><button class="btn primary" type="submit" id="btnStart" disabled>開始作答</button></div>
+      </form>
+    </div>
+    <div class="hint" style="text-align:center" id="adminEntry"><a href="#" id="lnkAdmin" style="color:var(--muted)">管理員登入</a></div>
+
+    <div class="hidden" id="vQuiz">
+      <div class="meta">
+        <span>姓名 <b id="mName"></b></span>
+        <span>單位 <b id="mUnit"></b></span>
+        <span>登入 <b id="mLogin"></b></span>
+        <span>已用時間 <b id="mElapsed">00:00</b></span>
+      </div>
+      <div class="card">
+        <div class="between hint"><span id="qCounter"></span><span id="qAnswered"></span></div>
+        <div class="progress"><i id="qBar"></i></div>
+        <span class="qtype" id="qType"></span>
+        <p class="qtext" id="qText"></p>
+        <div id="qOpts"></div>
+        <div class="between" style="margin-top:16px">
+          <button class="btn" id="btnPrev">上一題</button>
+          <div class="row">
+            <button class="btn" id="btnNext">下一題</button>
+            <button class="btn primary" id="btnSubmit">交卷</button>
+          </div>
+        </div>
+        <div class="dots" id="qDots"></div>
+      </div>
+    </div>
+
+    <div class="card hidden" id="vSending">
+      <h2>送出中…</h2>
+      <p class="sub" id="sendMsg" style="margin:0">正在計分，請稍候。</p>
+      <div class="row" style="margin-top:16px"><button class="btn primary hidden" id="btnRetry">重新送出</button></div>
+    </div>
+
+    <div class="card hidden" id="vResult">
+      <div class="between">
+        <div>
+          <h2>作答完成</h2>
+          <p class="sub" id="rInfo" style="margin:0"></p>
+        </div>
+        <div style="text-align:right">
+          <div class="score" id="rScore"></div>
+          <div class="hint" id="rDetail"></div>
+        </div>
+      </div>
+      <div class="row" style="margin-top:16px">
+        <span class="hint" style="color:var(--ok)">✓ 成績已送出</span>
+        <button class="btn primary" id="btnAgain" style="margin-left:auto">下一位作答</button>
+      </div>
+      <div class="review" id="rReview"></div>
+    </div>
+  </section>
+
+  <!-- 紀錄（管理員） -->
+  <section id="tab-records" class="hidden">
+    <div class="card">
+      <div class="between">
+        <div><h2>作答紀錄</h2><p class="sub" style="margin:0" id="recSub"></p></div>
+        <div class="row">
+          <button class="btn sm" id="btnReloadRec">重新整理</button>
+          <button class="btn sm" id="btnExpRecCsv">匯出作答資料 (CSV)</button>
+          <button class="btn sm" id="btnExpDetailCsv">匯出逐題明細 (CSV)</button>
+          <button class="btn sm danger" id="btnClearRec">清除紀錄</button>
+        </div>
+      </div>
+      <div style="overflow-x:auto;margin-top:16px"><table id="recTable"></table></div>
+    </div>
+  </section>
+
+  <!-- 題庫（管理員） -->
+  <section id="tab-bank" class="hidden">
+    <div class="card" style="position:sticky;top:8px;z-index:5">
+      <div class="between">
+        <div><h2>題庫管理</h2><p class="hint" style="margin:0" id="saveState">修改後請按「儲存題庫」，作答者重新整理後生效。</p></div>
+        <div class="row">
+          <button class="btn sm" id="btnExpQCsv">匯出題目 (CSV)</button>
+          <button class="btn sm" id="btnExpQJson">匯出題目 (JSON)</button>
+          <button class="btn sm" id="btnImpQ">匯入題目</button>
+          <input type="file" id="fileImp" accept=".json,.csv" class="hidden">
+          <button class="btn primary" id="btnSaveBank" disabled>儲存題庫</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <label class="f" for="setTitle" style="margin-top:0">測驗名稱</label>
+      <input type="text" id="setTitle">
+    </div>
+    <div class="card">
+      <h2>單位</h2>
+      <p class="sub" style="margin-bottom:12px">作答者登入時選擇的單位清單。</p>
+      <div id="unitEdit"></div>
+      <div class="row" style="margin-top:8px">
+        <input type="text" id="newUnit" placeholder="輸入新單位名稱" style="flex:1;min-width:160px">
+        <button class="btn" id="btnAddUnit">＋ 新增單位</button>
+      </div>
+      <label class="row" style="margin-top:14px;gap:8px;font-size:14px;cursor:pointer">
+        <input type="checkbox" id="setUnitsLocked" style="accent-color:var(--brand)">
+        作答者只能從清單選擇（不勾選時，也可以自行輸入其他單位）
+      </label>
+    </div>
+    <div class="card">
+      <h2 style="margin-bottom:10px">作答設定</h2>
+      <label class="f" for="setPass" style="margin-top:0">及格分數</label>
+      <input type="text" id="setPass" inputmode="numeric" style="max-width:120px">
+      <label class="f" for="setReview">交卷後作答者看到的內容</label>
+      <select id="setReview" style="max-width:360px">
+        <option value="result">只顯示哪些題目答錯（不顯示答案）</option>
+        <option value="answer">顯示對錯與正確答案</option>
+        <option value="full">顯示對錯、正確答案與解析</option>
+      </select>
+    </div>
+    <div id="bankList"></div>
+    <div class="row">
+      <button class="btn" id="btnAddQ">＋ 新增題目</button>
+      <button class="btn" id="btnReloadBank">放棄修改，重新載入</button>
+    </div>
+  </section>
+</div>
+
+<div class="modal hidden" id="modal">
+  <div class="box">
+    <div class="between"><h2 id="mdTitle" style="margin:0"></h2><button class="btn sm" id="mdClose">關閉</button></div>
+    <p class="hint" id="mdHint" style="margin:0"></p>
+    <div id="mdBody"></div>
+    <div class="row end" id="mdActions"></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ======== 設定：貼上 Google Apps Script 網頁應用程式網址 ======== */
+const API_URL = "https://script.google.com/macros/s/AKfycbyQW__tJl5uBlrJMO9A1pRayzg4W2HI0_9K4g7JaC2MJu5X9q8pXVionMxJAJXyXDw/exec";
+/* ================================================================ */
+
+(function(){
+"use strict";
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const clone = o => JSON.parse(JSON.stringify(o));
+const TYPE_LABEL = {single:"單選題", multi:"複選題", tf:"是非題"};
+const LETTERS = "ABCDEFGHIJ";
+const pad = n => String(n).padStart(2,"0");
+const fmt = d => `${d.getFullYear()}/${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+const fmtDur = s => `${pad(Math.floor(s/60))}:${pad(s%60)}`;
+const stamp = () => { const d=new Date(); return `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}`; };
+const ls = {
+  get(k,d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
+  set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} },
+  del(k){ try{ localStorage.removeItem(k); }catch(e){} }
+};
+const ss = {
+  get(k){ try{ return sessionStorage.getItem(k); }catch(e){ return null; } },
+  set(k,v){ try{ sessionStorage.setItem(k,v); }catch(e){} },
+  del(k){ try{ sessionStorage.removeItem(k); }catch(e){} }
+};
+
+setInterval(()=>{ $("#nowClock").textContent = fmt(new Date()); }, 1000);
+$("#nowClock").textContent = fmt(new Date());
+
+/* ---------- 介面小工具 ---------- */
+let toastT;
+function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("show"),2400); }
+function openModal(title, hint, bodyHTML, actions){
+  $("#mdTitle").textContent = title; $("#mdHint").textContent = hint || "";
+  $("#mdBody").innerHTML = bodyHTML || "";
+  const box = $("#mdActions"); box.innerHTML = "";
+  (actions||[]).forEach(a=>{
+    const b = document.createElement("button"); b.className = "btn " + (a.cls||""); b.textContent = a.text;
+    b.onclick = async ()=>{ if(a.fn){ b.disabled = true; const keep = await a.fn(); b.disabled = false; if(keep === true) return; } closeModal(); };
+    box.appendChild(b);
+  });
+  $("#modal").classList.remove("hidden");
+}
+function closeModal(){ $("#modal").classList.add("hidden"); }
+$("#mdClose").onclick = closeModal;
+const confirmBox = (title, msg, okText, onOk) => openModal(title, msg, "", [{text:"取消"}, {text:okText, cls:"primary", fn:onOk}]);
+
+/* ---------- API ---------- */
+let token = ss.get("quiz.adminToken");
+async function api(action, data){
+  if(/請貼上/.test(API_URL)) throw new Error("尚未設定 API_URL（請在 index.html 最上方貼上 Apps Script 網址）");
+  let res;
+  try{
+    res = await fetch(API_URL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body: JSON.stringify(Object.assign({action, token}, data || {})) });
+  }catch(e){ const err = new Error("無法連線，請確認網路後再試"); err.network = true; throw err; }
+  let j;
+  try{ j = await res.json(); }catch(e){ throw new Error("伺服器回應異常，請稍後再試"); }
+  if(!j.ok){
+    if(j.auth){ setAdmin(null); toast("管理員登入已過期，請重新登入"); }
+    throw new Error(j.error || "發生錯誤");
+  }
+  return j;
+}
+
+/* ---------- 下載 ---------- */
+const csvCell = v => { const s = String(v ?? ""); return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s; };
+const toCSV = rows => "﻿" + rows.map(r => r.map(csvCell).join(",")).join("\r\n");
+function download(filename, content, mime){
+  const blob = new Blob([content], {type: mime + ";charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a"); a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 4000);
+}
+
+/* ================= 作答者 ================= */
+let quiz = null;      // {title, units, unitsLocked, questions:[{id,type,text,options}]}
+let S = null, tick = null;
+
+function applyMeta(m){
+  $("#appTitle").textContent = m.title || "互動問答測驗";
+  document.title = m.title || "互動問答測驗";
+  const units = m.units || [];
+  $("#unitList").innerHTML = units.map(u=>`<option value="${esc(u)}">`).join("");
+  const locked = !!m.unitsLocked && units.length > 0;
+  const sel = $("#inUnitSel"), keep = sel.value;
+  sel.innerHTML = `<option value="">請選擇單位</option>` + units.map(u=>`<option value="${esc(u)}">${esc(u)}</option>`).join("");
+  if(units.includes(keep)) sel.value = keep;
+  sel.classList.toggle("hidden", !locked);
+  $("#inUnit").classList.toggle("hidden", locked);
+  $("#lblUnit").setAttribute("for", locked ? "inUnitSel" : "inUnit");
+}
+
+async function loadQuiz(){
+  $("#btnStart").disabled = true;
+  $("#bankNotice").style.color = "";
+  $("#bankNotice").textContent = "題目載入中…";
+  try{
+    const j = await api("getQuiz");
+    quiz = { title:j.title, units:j.units, unitsLocked:j.unitsLocked, questions:j.questions };
+    applyMeta(quiz);
+    const n = quiz.questions.length;
+    $("#bankNotice").textContent = n ? `共 ${n} 題` : "目前沒有題目，請洽管理員";
+    $("#btnStart").disabled = !n;
+  }catch(e){
+    $("#bankNotice").innerHTML = `${esc(e.message)}　<a href="#" id="lnkRetryLoad">重試</a>`;
+    $("#bankNotice").style.color = "var(--bad)";
+    $("#lnkRetryLoad").onclick = ev => { ev.preventDefault(); loadQuiz(); };
+  }
+}
+
+$("#loginForm").addEventListener("submit", e => {
+  e.preventDefault();
+  if(!quiz || !quiz.questions.length) return;
+  const locked = quiz.unitsLocked && (quiz.units||[]).length;
+  const name = $("#inName").value.trim(), unit = (locked ? $("#inUnitSel").value : $("#inUnit").value).trim();
+  if(!name){ $("#loginErr").textContent = "請輸入姓名"; $("#inName").focus(); return; }
+  if(!unit){ $("#loginErr").textContent = "請選擇或輸入單位"; return; }
+  $("#loginErr").textContent = "";
+  const now = new Date();
+  S = { name, unit, loginDate: now, loginAt: fmt(now), qs: clone(quiz.questions), ans: quiz.questions.map(()=>[]), cur: 0 };
+  $("#mName").textContent = name; $("#mUnit").textContent = unit; $("#mLogin").textContent = S.loginAt;
+  $("#vLogin").classList.add("hidden"); $("#adminEntry").classList.add("hidden"); $("#vQuiz").classList.remove("hidden");
+  clearInterval(tick);
+  tick = setInterval(()=>{ $("#mElapsed").textContent = fmtDur(Math.floor((Date.now()-S.loginDate)/1000)); }, 1000);
+  renderQ();
+});
+
+function renderQ(){
+  const q = S.qs[S.cur], n = S.qs.length, chosen = S.ans[S.cur];
+  const answered = S.ans.filter(a=>a.length).length;
+  $("#qCounter").textContent = `第 ${S.cur+1} / ${n} 題`;
+  $("#qAnswered").textContent = `已作答 ${answered} 題`;
+  $("#qBar").style.width = (answered/n*100) + "%";
+  $("#qType").textContent = TYPE_LABEL[q.type];
+  $("#qText").textContent = q.text;
+  const multi = q.type === "multi";
+  $("#qOpts").innerHTML = q.options.map((o,i)=>`
+    <label class="opt ${chosen.includes(i)?"sel":""}">
+      <input type="${multi?"checkbox":"radio"}" name="opt" value="${i}" ${chosen.includes(i)?"checked":""}>
+      <span><b>${LETTERS[i]}.</b> ${esc(o)}</span>
+    </label>`).join("");
+  $$("#qOpts input").forEach(inp => inp.onchange = () => {
+    S.ans[S.cur] = $$("#qOpts input").filter(x=>x.checked).map(x=>+x.value);
+    renderQ();
+  });
+  $("#btnPrev").disabled = S.cur === 0;
+  $("#btnNext").disabled = S.cur === n-1;
+  $("#qDots").innerHTML = S.qs.map((_,i)=>`<button class="${S.ans[i].length?"done":""} ${i===S.cur?"cur":""}" data-i="${i}">${i+1}</button>`).join("");
+  $$("#qDots button").forEach(b => b.onclick = () => { S.cur = +b.dataset.i; renderQ(); });
+}
+$("#btnPrev").onclick = () => { if(S.cur>0){ S.cur--; renderQ(); } };
+$("#btnNext").onclick = () => { if(S.cur<S.qs.length-1){ S.cur++; renderQ(); } };
+$("#btnSubmit").onclick = () => {
+  const left = S.ans.filter(a=>!a.length).length;
+  confirmBox("確認交卷", left ? `還有 ${left} 題未作答，確定要交卷嗎？` : "確定要交卷嗎？交卷後無法修改。", "交卷", () => { send(); });
+};
+
+function payload(){
+  const answers = {};
+  S.qs.forEach((q,i) => { answers[q.id] = S.ans[i]; });
+  return { name:S.name, unit:S.unit, loginAt:S.loginAt, seconds: Math.floor((Date.now()-S.loginDate)/1000), answers };
+}
+async function send(){
+  clearInterval(tick);
+  if(!S.payload) S.payload = payload();
+  $("#vQuiz").classList.add("hidden"); $("#vSending").classList.remove("hidden");
+  $("#sendMsg").textContent = "正在計分，請稍候。"; $("#sendMsg").style.color = "";
+  $("#btnRetry").classList.add("hidden");
+  try{
+    const r = await api("submit", S.payload);
+    showResult(r);
+  }catch(e){
+    $("#sendMsg").textContent = "成績尚未送出：" + e.message + "。請按「重新送出」，送出前請勿關閉此頁。";
+    $("#sendMsg").style.color = "var(--bad)";
+    $("#btnRetry").classList.remove("hidden");
+  }
+}
+$("#btnRetry").onclick = send;
+
+function showResult(r){
+  $("#vSending").classList.add("hidden"); $("#vResult").classList.remove("hidden");
+  $("#rScore").textContent = r.score + " 分";
+  $("#rDetail").innerHTML = `答對 ${r.correct} / ${r.total} 題 · <span style="color:${r.passed?"var(--ok)":"var(--bad)"}">${r.passed?"及格":"未及格"}</span>`;
+  $("#rInfo").textContent = `${S.name}（${S.unit}）｜登入 ${S.loginAt}｜交卷 ${r.submitAt}｜用時 ${fmtDur(S.payload.seconds)}`;
+  if(r.review === "result"){
+    const wrong = r.items.filter(x=>!x.ok).length;
+    $("#rReview").innerHTML = `<p class="hint" style="margin-top:0">${wrong ? `有 ${wrong} 題答錯，以下標示各題結果。` : "全部答對！"}</p>` +
+      r.items.map(it=>`<div class="row" style="margin-bottom:10px;flex-wrap:nowrap;align-items:flex-start">
+        <span class="tag ${it.ok?"ok":"bad"}" style="flex-shrink:0;margin-top:2px">${it.ok?"正確":"錯誤"}</span>
+        <span>${it.no}. ${esc(it.text)}</span></div>`).join("");
+  } else {
+    $("#rReview").innerHTML = r.items.map(it=>`
+      <div class="item">
+        <div class="row" style="margin-bottom:6px"><span class="tag ${it.ok?"ok":"bad"}">${it.ok?"正確":"錯誤"}</span><b>${it.no}. ${esc(it.text)}</b></div>
+        ${(it.options||[]).map((o,k)=>{
+          const isAns = it.answer.includes(k), isCh = it.chosen.includes(k);
+          return `<div class="opt ${isAns?"right":(isCh?"wrong":"")}" style="cursor:default;padding:8px 12px"><span><b>${LETTERS[k]}.</b> ${esc(o)}${isCh?" 　← 你的答案":""}</span></div>`;
+        }).join("")}
+        ${r.review === "full" && it.explain ? `<div class="explain">解析：${esc(it.explain)}</div>` : ""}
+      </div>`).join("");
+  }
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+$("#btnAgain").onclick = () => {
+  S = null; $("#inName").value = ""; $("#inUnit").value = ""; $("#inUnitSel").value = "";
+  $("#vResult").classList.add("hidden"); $("#vLogin").classList.remove("hidden");
+  if(!token) $("#adminEntry").classList.remove("hidden");
+  loadQuiz(); $("#inName").focus();
+};
+
+window.addEventListener("beforeunload", e => {
+  const unsentQuiz = S && !$("#vQuiz").classList.contains("hidden");
+  const unsentSend = S && !$("#btnRetry").classList.contains("hidden");
+  if(unsentQuiz || unsentSend || bankDirty){ e.preventDefault(); e.returnValue = ""; }
+});
+
+/* ================= 管理員 ================= */
+function setAdmin(t){
+  token = t;
+  if(t) ss.set("quiz.adminToken", t); else ss.del("quiz.adminToken");
+  const on = !!t;
+  $("#navTabs").classList.toggle("hidden", !on);
+  $("#adminBadge").classList.toggle("hidden", !on);
+  $("#adminBadge").textContent = "管理員：" + (ss.get("quiz.adminName") || "");
+  if(!on) ss.del("quiz.adminName");
+  $("#adminEntry").classList.toggle("hidden", on || !!S);
+  if(!on){ showTab("quiz"); bank = null; bankDirty = false; }
+}
+
+$("#lnkAdmin").onclick = e => {
+  e.preventDefault();
+  openModal("管理員登入", "登入後可查看作答紀錄與管理題庫。",
+    `<input type="text" id="admAcc" placeholder="帳號" autocomplete="username" style="width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;font:inherit;margin-bottom:8px">
+     <input type="password" id="admPw" placeholder="密碼" autocomplete="current-password" style="width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;font:inherit"><div class="err" id="admErr"></div>`,
+    [{text:"取消"}, {text:"登入", cls:"primary", fn: doLogin}]);
+  setTimeout(()=>{
+    $("#admAcc").focus();
+    $("#admAcc").onkeydown = ev => { if(ev.key==="Enter"){ ev.preventDefault(); $("#admPw").focus(); } };
+    $("#admPw").onkeydown = ev => { if(ev.key==="Enter"){ ev.preventDefault(); $("#mdActions .primary").click(); } };
+  }, 30);
+};
+async function doLogin(){
+  const account = $("#admAcc").value.trim(), pw = $("#admPw").value;
+  if(!account || !pw){ $("#admErr").textContent = "請輸入帳號與密碼"; return true; }
+  $("#admErr").textContent = "驗證中…"; $("#admErr").style.color = "var(--muted)";
+  try{
+    const j = await api("login", {account, password: pw});
+    ss.set("quiz.adminName", j.name || account);
+    setAdmin(j.token); toast("已登入：" + (j.name || account)); return;
+  }catch(e){ $("#admErr").style.color = ""; $("#admErr").textContent = e.message; return true; }
+}
+$("#btnLogout").onclick = () => {
+  const go = () => { setAdmin(null); toast("已登出"); };
+  bankDirty ? confirmBox("登出", "題庫有尚未儲存的修改，登出後會遺失。", "仍要登出", go) : go();
+};
+
+function showTab(name){
+  $$(".tabs button[data-tab]").forEach(x=>x.classList.toggle("on", x.dataset.tab===name));
+  ["quiz","records","bank"].forEach(t => $("#tab-"+t).classList.toggle("hidden", t!==name));
+}
+$$(".tabs button[data-tab]").forEach(b => b.onclick = () => {
+  if(b.dataset.tab !== "quiz" && !token) return;
+  showTab(b.dataset.tab);
+  if(b.dataset.tab==="records") loadRecords();
+  if(b.dataset.tab==="bank" && !bank) loadBank();
+});
+
+/* ---------- 作答紀錄 ---------- */
+let records = [];
+async function loadRecords(){
+  $("#recSub").textContent = "載入中…";
+  try{ records = (await api("getRecords")).records; renderRecords(); }
+  catch(e){ $("#recSub").textContent = e.message; }
+}
+function renderRecords(){
+  $("#recSub").textContent = records.length ? `共 ${records.length} 筆（完整資料也在 Google 試算表）` : "尚無紀錄";
+  const t = $("#recTable");
+  if(!records.length){ t.innerHTML = `<tr><td class="empty">還沒有人作答</td></tr>`; return; }
+  t.innerHTML = `<tr><th>姓名</th><th>單位</th><th>登入時間</th><th>交卷時間</th><th>用時</th><th>分數</th><th></th></tr>` +
+    records.slice().reverse().map(r=>`<tr>
+      <td>${esc(r.name)}</td><td>${esc(r.unit)}</td><td>${esc(r.loginAt)}</td><td>${esc(r.submitAt)}</td><td>${fmtDur(r.seconds)}</td>
+      <td><b style="color:${r.passed?"var(--ok)":"var(--bad)"}">${r.score}</b> <span class="hint">(${r.correct}/${r.total})</span></td>
+      <td><button class="btn sm danger" data-del="${esc(r.id)}">刪除</button></td></tr>`).join("");
+  $$("[data-del]").forEach(b => b.onclick = () => confirmBox("刪除紀錄", "確定刪除這筆作答紀錄？", "刪除", async ()=>{
+    try{ await api("deleteRecords", {ids:[b.dataset.del]}); records = records.filter(r=>r.id!==b.dataset.del); renderRecords(); toast("已刪除"); }
+    catch(e){ toast(e.message); }
+  }));
+}
+$("#btnReloadRec").onclick = loadRecords;
+$("#btnClearRec").onclick = () => records.length && confirmBox("清除所有紀錄", "會一併刪除 Google 試算表中的紀錄，建議先匯出。確定清除？", "全部清除", async ()=>{
+  try{ await api("deleteRecords", {ids: records.map(r=>r.id)}); records = []; renderRecords(); toast("已清除"); }
+  catch(e){ toast(e.message); }
+});
+function recordsCSV(list){
+  const maxQ = Math.max(0, ...list.map(r=>r.items.length));
+  const head = ["測驗名稱","姓名","單位","登入時間","交卷時間","作答時間","答對題數","總題數","分數","是否及格"];
+  for(let i=0;i<maxQ;i++) head.push(`第${i+1}題作答`, `第${i+1}題結果`);
+  const rows = [head];
+  list.forEach(r=>{
+    const row = [r.title, r.name, r.unit, r.loginAt, r.submitAt, fmtDur(r.seconds), r.correct, r.total, r.score, r.passed?"及格":"未及格"];
+    r.items.forEach(it => row.push(it.chosenText, it.ok ? "O" : "X"));
+    rows.push(row);
+  });
+  return toCSV(rows);
+}
+function detailCSV(list){
+  const rows = [["姓名","單位","登入時間","交卷時間","題號","題型","題目","作答","正確答案","結果"]];
+  list.forEach(r => r.items.forEach(it => rows.push([r.name, r.unit, r.loginAt, r.submitAt, it.no, it.typeLabel, it.text, it.chosenText, it.answerText, it.ok ? "正確" : "錯誤"])));
+  return toCSV(rows);
+}
+$("#btnExpRecCsv").onclick = () => records.length ? download(`作答資料_${stamp()}.csv`, recordsCSV(records), "text/csv") : toast("尚無紀錄");
+$("#btnExpDetailCsv").onclick = () => records.length ? download(`逐題明細_${stamp()}.csv`, detailCSV(records), "text/csv") : toast("尚無紀錄");
+
+/* ---------- 題庫管理 ---------- */
+let bank = null, bankDirty = false;
+function markDirty(){
+  bankDirty = true; $("#btnSaveBank").disabled = false;
+  $("#saveState").textContent = "有尚未儲存的修改"; $("#saveState").style.color = "var(--warn)";
+}
+async function loadBank(){
+  $("#bankList").innerHTML = `<div class="card empty">載入中…</div>`;
+  try{
+    bank = (await api("getBank")).bank;
+    bankDirty = false; $("#btnSaveBank").disabled = true;
+    $("#saveState").textContent = "修改後請按「儲存題庫」，作答者重新整理後生效。"; $("#saveState").style.color = "";
+    renderBank();
+  }catch(e){ $("#bankList").innerHTML = `<div class="card empty">${esc(e.message)}</div>`; }
+}
+function validateBank(){
+  for(let i=0;i<bank.questions.length;i++){
+    const q = bank.questions[i];
+    if(!q.text.trim()) return `第 ${i+1} 題沒有題目`;
+    if(q.options.some(o=>!String(o).trim())) return `第 ${i+1} 題有空白選項`;
+    if(!q.answer.length) return `第 ${i+1} 題沒有設定正確答案`;
+  }
+  return "";
+}
+$("#btnSaveBank").onclick = async () => {
+  const err = validateBank();
+  if(err){ toast(err); return; }
+  $("#btnSaveBank").disabled = true; $("#saveState").textContent = "儲存中…"; $("#saveState").style.color = "";
+  try{
+    bank = (await api("saveBank", {bank})).bank;
+    bankDirty = false; $("#saveState").textContent = "✓ 已儲存到 Google 試算表"; $("#saveState").style.color = "var(--ok)";
+    renderBank(); loadQuiz();
+  }catch(e){
+    $("#btnSaveBank").disabled = false; $("#saveState").textContent = "儲存失敗：" + e.message; $("#saveState").style.color = "var(--bad)";
+  }
+};
+$("#btnReloadBank").onclick = () => bankDirty ? confirmBox("放棄修改", "尚未儲存的修改都會消失。", "放棄並重新載入", loadBank) : loadBank();
+
+function renderBank(){
+  $("#setTitle").value = bank.title || "";
+  $("#setPass").value = bank.pass ?? 60;
+  $("#setReview").value = bank.reviewMode || "result";
+  renderUnits();
+  const list = $("#bankList");
+  if(!bank.questions.length){ list.innerHTML = `<div class="card empty">題庫是空的，按「新增題目」開始</div>`; return; }
+  list.innerHTML = bank.questions.map((q,i)=>`
+    <div class="card qedit" data-i="${i}">
+      <div class="between" style="margin-bottom:8px">
+        <b>第 ${i+1} 題</b>
+        <div class="row">
+          <select data-k="type" style="width:auto;padding:5px 8px">
+            ${Object.entries(TYPE_LABEL).map(([k,v])=>`<option value="${k}" ${q.type===k?"selected":""}>${v}</option>`).join("")}
+          </select>
+          <button class="btn sm" data-act="up" ${i===0?"disabled":""}>↑</button>
+          <button class="btn sm" data-act="down" ${i===bank.questions.length-1?"disabled":""}>↓</button>
+          <button class="btn sm danger" data-act="del">刪除</button>
+        </div>
+      </div>
+      <textarea data-k="text" placeholder="題目">${esc(q.text)}</textarea>
+      <div class="hint" style="margin:10px 0 6px">選項（勾選正確答案${q.type==="multi"?"，可多選":""}）</div>
+      <div class="opts">
+        ${q.options.map((o,k)=>`
+          <div class="orow">
+            <input type="${q.type==="multi"?"checkbox":"radio"}" name="ans${i}" data-ans="${k}" ${q.answer.includes(k)?"checked":""} style="accent-color:var(--brand)">
+            <b style="width:16px">${LETTERS[k]}</b>
+            <input type="text" data-opt="${k}" value="${esc(o)}" ${q.type==="tf"?"readonly":""}>
+            ${q.type!=="tf" && q.options.length>2 ? `<button class="btn sm" data-rmopt="${k}">✕</button>` : ""}
+          </div>`).join("")}
+      </div>
+      ${q.type!=="tf" && q.options.length<LETTERS.length ? `<button class="btn sm" data-act="addopt">＋ 選項</button>` : ""}
+      <label class="f">解析（選填）</label>
+      <input type="text" data-k="explain" value="${esc(q.explain||"")}">
+    </div>`).join("");
+
+  $$(".qedit").forEach(box=>{
+    const i = +box.dataset.i, q = bank.questions[i];
+    box.querySelector('[data-k="text"]').oninput = e => { q.text = e.target.value; markDirty(); };
+    box.querySelector('[data-k="explain"]').oninput = e => { q.explain = e.target.value; markDirty(); };
+    box.querySelector('[data-k="type"]').onchange = e => {
+      q.type = e.target.value;
+      if(q.type==="tf"){ q.options = ["是","否"]; q.answer = [q.answer[0]===1?1:0]; }
+      else if(q.type==="single"){ q.answer = q.answer.length ? [q.answer[0]] : [0]; }
+      markDirty(); renderBank();
+    };
+    box.querySelectorAll("[data-opt]").forEach(inp => inp.oninput = e => { q.options[+inp.dataset.opt] = e.target.value; markDirty(); });
+    box.querySelectorAll("[data-ans]").forEach(inp => inp.onchange = () => {
+      q.answer = Array.from(box.querySelectorAll("[data-ans]")).filter(x=>x.checked).map(x=>+x.dataset.ans);
+      markDirty();
+    });
+    box.querySelectorAll("[data-rmopt]").forEach(b => b.onclick = () => {
+      const k = +b.dataset.rmopt; q.options.splice(k,1);
+      q.answer = q.answer.filter(a=>a!==k).map(a=>a>k?a-1:a); if(!q.answer.length) q.answer=[0];
+      markDirty(); renderBank();
+    });
+    box.querySelectorAll("[data-act]").forEach(b => b.onclick = () => {
+      const a = b.dataset.act, Q = bank.questions;
+      if(a==="up"){ [Q[i-1],Q[i]]=[Q[i],Q[i-1]]; }
+      if(a==="down"){ [Q[i+1],Q[i]]=[Q[i],Q[i+1]]; }
+      if(a==="addopt"){ q.options.push(""); }
+      if(a==="del"){ return confirmBox("刪除題目", `確定刪除第 ${i+1} 題？`, "刪除", ()=>{ Q.splice(i,1); markDirty(); renderBank(); }); }
+      markDirty(); renderBank();
+    });
+  });
+}
+$("#setTitle").oninput = e => { bank.title = e.target.value; markDirty(); };
+$("#setPass").oninput = e => { bank.pass = Math.max(0, Math.min(100, parseInt(e.target.value)||0)); markDirty(); };
+$("#setReview").onchange = e => { bank.reviewMode = e.target.value; markDirty(); };
+$("#setUnitsLocked").onchange = e => { bank.unitsLocked = e.target.checked; markDirty(); };
+
+function renderUnits(){
+  const U = bank.units = bank.units || [];
+  $("#setUnitsLocked").checked = !!bank.unitsLocked;
+  const box = $("#unitEdit");
+  if(!U.length){ box.innerHTML = `<div class="hint">尚未設定單位，作答者需自行輸入。</div>`; return; }
+  box.innerHTML = U.map((u,i)=>`
+    <div class="row" style="margin-bottom:6px;flex-wrap:nowrap">
+      <input type="text" data-unit="${i}" value="${esc(u)}" style="flex:1">
+      <button class="btn sm" data-uact="up" data-i="${i}" ${i===0?"disabled":""}>↑</button>
+      <button class="btn sm" data-uact="down" data-i="${i}" ${i===U.length-1?"disabled":""}>↓</button>
+      <button class="btn sm danger" data-uact="del" data-i="${i}">刪除</button>
+    </div>`).join("");
+  box.querySelectorAll("[data-unit]").forEach(inp => {
+    inp.oninput = () => { U[+inp.dataset.unit] = inp.value; markDirty(); };
+    inp.onblur = () => { const v = inp.value.trim(), i = +inp.dataset.unit; if(!v) U.splice(i,1); else U[i] = v; renderUnits(); };
+  });
+  box.querySelectorAll("[data-uact]").forEach(b => b.onclick = () => {
+    const i = +b.dataset.i, a = b.dataset.uact;
+    if(a==="up") [U[i-1],U[i]] = [U[i],U[i-1]];
+    if(a==="down") [U[i+1],U[i]] = [U[i],U[i+1]];
+    if(a==="del") U.splice(i,1);
+    markDirty(); renderUnits();
+  });
+}
+function addUnit(){
+  const v = $("#newUnit").value.trim(); if(!v) return;
+  if(bank.units.includes(v)){ toast("已有這個單位"); return; }
+  bank.units.push(v); $("#newUnit").value = ""; markDirty(); renderUnits(); $("#newUnit").focus();
+}
+$("#btnAddUnit").onclick = addUnit;
+$("#newUnit").onkeydown = e => { if(e.key === "Enter"){ e.preventDefault(); addUnit(); } };
+$("#btnAddQ").onclick = () => { bank.questions.push({type:"single", text:"", options:["","","",""], answer:[0], explain:""}); markDirty(); renderBank(); window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"}); };
+
+/* 匯出／匯入題目 */
+function questionsCSV(){
+  const maxOpt = Math.max(2, ...bank.questions.map(q=>q.options.length));
+  const head = ["題號","題型","題目"];
+  for(let i=0;i<maxOpt;i++) head.push("選項" + LETTERS[i]);
+  head.push("正確答案","解析");
+  const rows = [head];
+  bank.questions.forEach((q,i)=>{
+    const r = [i+1, TYPE_LABEL[q.type], q.text];
+    for(let k=0;k<maxOpt;k++) r.push(q.options[k] ?? "");
+    r.push(q.answer.map(a=>LETTERS[a]).join(""), q.explain||"");
+    rows.push(r);
+  });
+  return toCSV(rows);
+}
+$("#btnExpQCsv").onclick = () => bank && download(`題目_${stamp()}.csv`, questionsCSV(), "text/csv");
+$("#btnExpQJson").onclick = () => bank && download(`題庫_${stamp()}.json`, JSON.stringify(bank, null, 2), "application/json");
+$("#btnImpQ").onclick = () => $("#fileImp").click();
+$("#fileImp").onchange = async e => {
+  const f = e.target.files[0]; e.target.value = ""; if(!f) return;
+  try{
+    const txt = (await f.text()).replace(/^﻿/,"");
+    let nb;
+    if(/\.json$/i.test(f.name)){ nb = JSON.parse(txt); if(!Array.isArray(nb.questions)) throw 0; }
+    else nb = Object.assign({}, bank, {questions: parseQCSV(txt)});
+    confirmBox("匯入題目", `讀到 ${nb.questions.length} 題，將取代目前題庫（按「儲存題庫」後才會生效）。`, "匯入", ()=>{ bank = nb; markDirty(); renderBank(); toast("已匯入，記得按「儲存題庫」"); });
+  }catch(err){ toast("檔案格式無法辨識"); }
+};
+function parseCSVRows(t){
+  const rows=[]; let row=[], cell="", q=false;
+  for(let i=0;i<t.length;i++){ const c=t[i];
+    if(q){ if(c==='"'){ if(t[i+1]==='"'){cell+='"';i++;} else q=false; } else cell+=c; }
+    else if(c==='"') q=true; else if(c===","){ row.push(cell); cell=""; }
+    else if(c==="\n"||c==="\r"){ if(c==="\r"&&t[i+1]==="\n") i++; row.push(cell); rows.push(row); row=[]; cell=""; }
+    else cell+=c; }
+  if(cell||row.length){ row.push(cell); rows.push(row); }
+  return rows.filter(r=>r.some(x=>x.trim()));
+}
+function parseQCSV(t){
+  const rows = parseCSVRows(t), h = rows.shift().map(x=>x.trim());
+  const iType=h.indexOf("題型"), iText=h.indexOf("題目"), iAns=h.indexOf("正確答案"), iExp=h.indexOf("解析");
+  const optCols = h.map((x,i)=>/^選項/.test(x)?i:-1).filter(i=>i>=0);
+  const typeMap = {"單選題":"single","複選題":"multi","是非題":"tf"};
+  return rows.map(r=>{
+    const options = optCols.map(i=>(r[i]||"").trim()).filter(Boolean);
+    const answer = (r[iAns]||"A").toUpperCase().replace(/[^A-J]/g,"").split("").map(L=>LETTERS.indexOf(L)).filter(x=>x<options.length);
+    return { type: typeMap[(r[iType]||"").trim()] || "single", text: r[iText]||"", options, answer: answer.length?answer:[0], explain: iExp>=0 ? (r[iExp]||"") : "" };
+  });
+}
+
+/* ---------- 啟動 ---------- */
+setAdmin(token);
+loadQuiz();
+})();
+</script>
+</body>
+</html>
