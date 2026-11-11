@@ -264,8 +264,10 @@ th{color:var(--muted);font-weight:500;font-size:13px}
 <div class="toast" id="toast"></div>
 
 <script>
-/* ======== 設定：貼上 Google Apps Script 網頁應用程式網址 ======== */
-const API_URL = "https://script.google.com/macros/s/AKfycbyQW__tJl5uBlrJMO9A1pRayzg4W2HI0_9K4g7JaC2MJu5X9q8pXVionMxJAJXyXDw/exec";
+/* ======== 設定：貼上後台網址 ========
+   Cloudflare Worker：https://quiz-api.你的子網域.workers.dev
+   Apps Script     ：https://script.google.com/macros/s/部署ID/exec          */
+const API_URL = "https://quiz-api.jasminelian7.workers.dev";
 /* ================================================================ */
 
 (function(){
@@ -315,7 +317,7 @@ const confirmBox = (title, msg, okText, onOk) => openModal(title, msg, "", [{tex
 /* ---------- API ---------- */
 let token = ss.get("quiz.adminToken");
 async function api(action, data){
-  if(/請貼上/.test(API_URL)) throw new Error("尚未設定 API_URL（請在 index.html 最上方貼上 Apps Script 網址）");
+  if(/請貼上/.test(API_URL)) throw new Error("尚未設定 API_URL（請在 index.html 最上方貼上後台網址）");
   let res;
   try{
     res = await fetch(API_URL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"},
