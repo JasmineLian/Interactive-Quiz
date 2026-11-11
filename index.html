@@ -117,7 +117,7 @@ th{color:var(--muted);font-weight:500;font-size:13px}
 
     <div class="hidden" id="vQuiz">
       <div class="meta">
-        <span>姓名 <b id="mName"></b></span>
+        <span>姓名 <b id="mName"></b> <a href="#" id="lnkEditName" style="color:var(--brand);font-size:13px">修改</a></span>
         <span>單位 <b id="mUnit"></b></span>
         <span>登入 <b id="mLogin"></b></span>
         <span>已用時間 <b id="mElapsed">00:00</b></span>
@@ -449,6 +449,16 @@ function renderQ(){
 }
 $("#btnPrev").onclick = () => { if(S.cur>0){ S.cur--; renderQ(); } };
 $("#btnNext").onclick = () => { if(S.cur<S.qs.length-1){ S.cur++; renderQ(); } };
+$("#lnkEditName").onclick = e => {
+  e.preventDefault();
+  openModal("修改姓名", "", `<input type="text" id="edName" maxlength="50" value="${esc(S.name)}" style="width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;font:inherit"><div class="err" id="edErr"></div>`,
+    [{text:"取消"}, {text:"儲存", cls:"primary", fn: () => {
+      const n = $("#edName").value.trim();
+      if(!n){ $("#edErr").textContent = "姓名不可空白"; return true; }
+      S.name = n; $("#mName").textContent = n;
+    }}]);
+  setTimeout(()=>{ const i = $("#edName"); if(i) i.focus(); }, 30);
+};
 $("#btnSubmit").onclick = () => {
   const left = S.ans.filter(a=>!a.length).length;
   const locked = meta.unitsLocked && (meta.units||[]).length;
