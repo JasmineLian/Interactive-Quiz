@@ -375,7 +375,7 @@ function refreshPick(){
     setHeaderTitle(qs.length === 1 ? qs[0].title : "互動問答測驗");
     if(!qs.length){ notice("目前沒有開放的測驗，請洽管理員", true); $("#btnStart").disabled = true; return; }
   }
-  notice(q ? `共 ${q.count} 題` : "請選擇測驗");
+  notice(q ? "" : "請選擇測驗");
   $("#btnStart").disabled = !q;
 }
 $("#inQuiz").onchange = refreshPick;
