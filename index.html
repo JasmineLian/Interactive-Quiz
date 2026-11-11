@@ -97,6 +97,10 @@ th{color:var(--muted);font-weight:500;font-size:13px}
       <h2>登入</h2>
       <p class="sub">請填寫姓名與單位，登入時間會自動記錄。</p>
       <form id="loginForm" autocomplete="off">
+        <div id="quizPick">
+          <label class="f" for="inQuiz" style="margin-top:0">測驗</label>
+          <select id="inQuiz"></select>
+        </div>
         <label class="f" for="inName">姓名</label>
         <input type="text" id="inName" placeholder="請輸入姓名" maxlength="50">
         <label class="f" for="inUnit" id="lblUnit">單位</label>
@@ -106,7 +110,7 @@ th{color:var(--muted);font-weight:500;font-size:13px}
         <label class="f">登入時間</label>
         <div id="nowClock" class="hint" style="font-size:15px;color:var(--ink)"></div>
         <div class="err" id="loginErr"></div>
-        <div class="between"><span class="hint" id="bankNotice">題目載入中…</span><button class="btn primary" type="submit" id="btnStart" disabled>開始作答</button></div>
+        <div class="between"><span class="hint" id="bankNotice">載入中…</span><button class="btn primary" type="submit" id="btnStart" disabled>開始作答</button></div>
       </form>
     </div>
     <div class="hint" style="text-align:center" id="adminEntry"><a href="#" id="lnkAdmin" style="color:var(--muted)">管理員登入</a></div>
@@ -166,9 +170,9 @@ th{color:var(--muted);font-weight:500;font-size:13px}
       <div class="between">
         <div><h2>作答紀錄</h2><p class="sub" style="margin:0" id="recSub"></p></div>
         <div class="row">
+          <select id="recFilter" style="width:auto;padding:5px 8px;font-size:13px"></select>
           <button class="btn sm" id="btnReloadRec">重新整理</button>
           <button class="btn sm" id="btnExpRecCsv">匯出作答資料 (CSV)</button>
-          <button class="btn sm" id="btnExpDetailCsv">匯出逐題明細 (CSV)</button>
           <button class="btn sm danger" id="btnClearRec">清除紀錄</button>
         </div>
       </div>
@@ -178,50 +182,73 @@ th{color:var(--muted);font-weight:500;font-size:13px}
 
   <!-- 題庫（管理員） -->
   <section id="tab-bank" class="hidden">
-    <div class="card" style="position:sticky;top:8px;z-index:5">
-      <div class="between">
-        <div><h2>題庫管理</h2><p class="hint" style="margin:0" id="saveState">修改後請按「儲存題庫」，作答者重新整理後生效。</p></div>
-        <div class="row">
-          <button class="btn sm" id="btnExpQCsv">匯出題目 (CSV)</button>
-          <button class="btn sm" id="btnExpQJson">匯出題目 (JSON)</button>
-          <button class="btn sm" id="btnImpQ">匯入題目</button>
-          <input type="file" id="fileImp" accept=".json,.csv" class="hidden">
-          <button class="btn primary" id="btnSaveBank" disabled>儲存題庫</button>
+    <div id="bankHome">
+      <div class="card">
+        <div class="between">
+          <div><h2>測驗清單</h2><p class="sub" style="margin:0">每份測驗有各自的題目與設定。關閉作答的測驗，作答者看不到。</p></div>
+          <button class="btn primary" id="btnNewQuiz">＋ 新增測驗</button>
+        </div>
+        <div style="overflow-x:auto;margin-top:14px"><table id="quizTable"></table></div>
+      </div>
+      <div class="card">
+        <div class="between">
+          <div><h2>單位</h2><p class="sub" style="margin:0">所有測驗共用。作答者登入時選擇的單位清單。</p></div>
+          <button class="btn sm primary" id="btnSaveUnits" disabled>儲存單位設定</button>
+        </div>
+        <div id="unitEdit" style="margin-top:12px"></div>
+        <div class="row" style="margin-top:8px">
+          <input type="text" id="newUnit" placeholder="輸入新單位名稱" style="flex:1;min-width:160px">
+          <button class="btn" id="btnAddUnit">＋ 新增單位</button>
+        </div>
+        <label class="row" style="margin-top:14px;gap:8px;font-size:14px;cursor:pointer">
+          <input type="checkbox" id="setUnitsLocked" style="accent-color:var(--brand)">
+          作答者只能從清單選擇（不勾選時，也可以自行輸入其他單位）
+        </label>
+      </div>
+    </div>
+
+    <div id="bankEdit" class="hidden">
+      <div class="card" style="position:sticky;top:8px;z-index:5">
+        <div class="between">
+          <div>
+            <a href="#" id="lnkBack" class="hint" style="color:var(--muted)">← 返回測驗清單</a>
+            <h2 id="editTitle" style="margin-top:4px"></h2>
+            <p class="hint" style="margin:0" id="saveState"></p>
+          </div>
+          <div class="row">
+            <button class="btn sm" id="btnExpQCsv">匯出題目 (CSV)</button>
+            <button class="btn sm" id="btnExpQJson">匯出題目 (JSON)</button>
+            <button class="btn sm" id="btnImpQ">匯入題目</button>
+            <input type="file" id="fileImp" accept=".json,.csv" class="hidden">
+            <button class="btn primary" id="btnSaveBank" disabled>儲存測驗</button>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="card">
-      <label class="f" for="setTitle" style="margin-top:0">測驗名稱</label>
-      <input type="text" id="setTitle">
-    </div>
-    <div class="card">
-      <h2>單位</h2>
-      <p class="sub" style="margin-bottom:12px">作答者登入時選擇的單位清單。</p>
-      <div id="unitEdit"></div>
-      <div class="row" style="margin-top:8px">
-        <input type="text" id="newUnit" placeholder="輸入新單位名稱" style="flex:1;min-width:160px">
-        <button class="btn" id="btnAddUnit">＋ 新增單位</button>
+      <div class="card">
+        <label class="f" for="setTitle" style="margin-top:0">測驗名稱</label>
+        <input type="text" id="setTitle">
+        <label class="row" style="margin-top:14px;gap:8px;font-size:14px;cursor:pointer">
+          <input type="checkbox" id="setOpen" style="accent-color:var(--brand)"> 開放作答
+        </label>
+        <label class="f" for="setPass">及格分數</label>
+        <input type="text" id="setPass" inputmode="numeric" style="max-width:120px">
+        <label class="f" for="setReview">交卷後作答者看到的內容</label>
+        <select id="setReview" style="max-width:360px">
+          <option value="result">只顯示哪些題目答錯（不顯示答案）</option>
+          <option value="answer">顯示對錯與正確答案</option>
+          <option value="full">顯示對錯、正確答案與解析</option>
+        </select>
+        <label class="f">作答專屬連結</label>
+        <div class="row" style="flex-wrap:nowrap">
+          <input type="text" id="quizLink" readonly style="flex:1">
+          <button class="btn sm" id="btnCopyLink">複製</button>
+        </div>
       </div>
-      <label class="row" style="margin-top:14px;gap:8px;font-size:14px;cursor:pointer">
-        <input type="checkbox" id="setUnitsLocked" style="accent-color:var(--brand)">
-        作答者只能從清單選擇（不勾選時，也可以自行輸入其他單位）
-      </label>
-    </div>
-    <div class="card">
-      <h2 style="margin-bottom:10px">作答設定</h2>
-      <label class="f" for="setPass" style="margin-top:0">及格分數</label>
-      <input type="text" id="setPass" inputmode="numeric" style="max-width:120px">
-      <label class="f" for="setReview">交卷後作答者看到的內容</label>
-      <select id="setReview" style="max-width:360px">
-        <option value="result">只顯示哪些題目答錯（不顯示答案）</option>
-        <option value="answer">顯示對錯與正確答案</option>
-        <option value="full">顯示對錯、正確答案與解析</option>
-      </select>
-    </div>
-    <div id="bankList"></div>
-    <div class="row">
-      <button class="btn" id="btnAddQ">＋ 新增題目</button>
-      <button class="btn" id="btnReloadBank">放棄修改，重新載入</button>
+      <div id="bankList"></div>
+      <div class="row">
+        <button class="btn" id="btnAddQ">＋ 新增題目</button>
+        <button class="btn" id="btnReloadBank">放棄修改，重新載入</button>
+      </div>
     </div>
   </section>
 </div>
@@ -315,12 +342,11 @@ function download(filename, content, mime){
 }
 
 /* ================= 作答者 ================= */
-let quiz = null;      // {title, units, unitsLocked, questions:[{id,type,text,options}]}
+let meta = null;      // {units, unitsLocked, quizzes:[{id,title,count}]}
 let S = null, tick = null;
+const fixedQuiz = (()=>{ try{ return new URLSearchParams(location.search).get("quiz") || ""; }catch(e){ return ""; } })();
 
-function applyMeta(m){
-  $("#appTitle").textContent = m.title || "互動問答測驗";
-  document.title = m.title || "互動問答測驗";
+function applyUnits(m){
   const units = m.units || [];
   $("#unitList").innerHTML = units.map(u=>`<option value="${esc(u)}">`).join("");
   const locked = !!m.unitsLocked && units.length > 0;
@@ -331,35 +357,64 @@ function applyMeta(m){
   $("#inUnit").classList.toggle("hidden", locked);
   $("#lblUnit").setAttribute("for", locked ? "inUnitSel" : "inUnit");
 }
+function setHeaderTitle(t){ $("#appTitle").textContent = t || "互動問答測驗"; document.title = t || "互動問答測驗"; }
 
-async function loadQuiz(){
+function notice(msg, bad){ $("#bankNotice").textContent = msg; $("#bankNotice").style.color = bad ? "var(--bad)" : ""; }
+function refreshPick(){
+  const qs = meta ? meta.quizzes : [];
+  const id = $("#inQuiz").value;
+  const q = qs.find(x=>x.id===id);
+  if(fixedQuiz){
+    $("#quizPick").classList.add("hidden");
+    setHeaderTitle(q ? q.title : "");
+    if(!q){ notice("這份測驗不存在或未開放作答", true); $("#btnStart").disabled = true; return; }
+  } else {
+    $("#quizPick").classList.toggle("hidden", qs.length <= 1);
+    setHeaderTitle(qs.length === 1 ? qs[0].title : "互動問答測驗");
+    if(!qs.length){ notice("目前沒有開放的測驗，請洽管理員", true); $("#btnStart").disabled = true; return; }
+  }
+  notice(q ? `共 ${q.count} 題` : "請選擇測驗");
+  $("#btnStart").disabled = !q;
+}
+$("#inQuiz").onchange = refreshPick;
+
+async function loadList(){
   $("#btnStart").disabled = true;
-  $("#bankNotice").style.color = "";
-  $("#bankNotice").textContent = "題目載入中…";
+  notice("載入中…");
   try{
-    const j = await api("getQuiz");
-    quiz = { title:j.title, units:j.units, unitsLocked:j.unitsLocked, questions:j.questions };
-    applyMeta(quiz);
-    const n = quiz.questions.length;
-    $("#bankNotice").textContent = n ? `共 ${n} 題` : "目前沒有題目，請洽管理員";
-    $("#btnStart").disabled = !n;
+    meta = await api("getQuizList");
+    applyUnits(meta);
+    const keep = fixedQuiz || $("#inQuiz").value;
+    $("#inQuiz").innerHTML = (meta.quizzes.length > 1 ? `<option value="">請選擇測驗</option>` : "") +
+      meta.quizzes.map(q=>`<option value="${esc(q.id)}">${esc(q.title)}</option>`).join("");
+    if(meta.quizzes.some(q=>q.id===keep)) $("#inQuiz").value = keep;
+    else if(fixedQuiz) $("#inQuiz").value = "";
+    refreshPick();
   }catch(e){
     $("#bankNotice").innerHTML = `${esc(e.message)}　<a href="#" id="lnkRetryLoad">重試</a>`;
     $("#bankNotice").style.color = "var(--bad)";
-    $("#lnkRetryLoad").onclick = ev => { ev.preventDefault(); loadQuiz(); };
+    $("#lnkRetryLoad").onclick = ev => { ev.preventDefault(); loadList(); };
   }
 }
 
-$("#loginForm").addEventListener("submit", e => {
+$("#loginForm").addEventListener("submit", async e => {
   e.preventDefault();
-  if(!quiz || !quiz.questions.length) return;
-  const locked = quiz.unitsLocked && (quiz.units||[]).length;
+  if(!meta) return;
+  const quizId = $("#inQuiz").value;
+  const locked = meta.unitsLocked && (meta.units||[]).length;
   const name = $("#inName").value.trim(), unit = (locked ? $("#inUnitSel").value : $("#inUnit").value).trim();
+  if(!quizId){ $("#loginErr").textContent = "請選擇測驗"; return; }
   if(!name){ $("#loginErr").textContent = "請輸入姓名"; $("#inName").focus(); return; }
   if(!unit){ $("#loginErr").textContent = "請選擇或輸入單位"; return; }
   $("#loginErr").textContent = "";
+  $("#btnStart").disabled = true; notice("題目載入中…");
+  let quiz;
+  try{ quiz = await api("getQuiz", {quizId}); }
+  catch(err){ $("#loginErr").textContent = err.message; $("#btnStart").disabled = false; refreshPick(); return; }
+  if(!quiz.questions.length){ $("#loginErr").textContent = "這份測驗沒有題目"; refreshPick(); return; }
   const now = new Date();
-  S = { name, unit, loginDate: now, loginAt: fmt(now), qs: clone(quiz.questions), ans: quiz.questions.map(()=>[]), cur: 0 };
+  S = { quizId, title: quiz.title, name, unit, loginDate: now, loginAt: fmt(now), qs: quiz.questions, ans: quiz.questions.map(()=>[]), cur: 0 };
+  setHeaderTitle(quiz.title);
   $("#mName").textContent = name; $("#mUnit").textContent = unit; $("#mLogin").textContent = S.loginAt;
   $("#vLogin").classList.add("hidden"); $("#adminEntry").classList.add("hidden"); $("#vQuiz").classList.remove("hidden");
   clearInterval(tick);
@@ -400,7 +455,7 @@ $("#btnSubmit").onclick = () => {
 function payload(){
   const answers = {};
   S.qs.forEach((q,i) => { answers[q.id] = S.ans[i]; });
-  return { name:S.name, unit:S.unit, loginAt:S.loginAt, seconds: Math.floor((Date.now()-S.loginDate)/1000), answers };
+  return { quizId:S.quizId, name:S.name, unit:S.unit, loginAt:S.loginAt, seconds: Math.floor((Date.now()-S.loginDate)/1000), answers };
 }
 async function send(){
   clearInterval(tick);
@@ -448,13 +503,13 @@ $("#btnAgain").onclick = () => {
   S = null; $("#inName").value = ""; $("#inUnit").value = ""; $("#inUnitSel").value = "";
   $("#vResult").classList.add("hidden"); $("#vLogin").classList.remove("hidden");
   if(!token) $("#adminEntry").classList.remove("hidden");
-  loadQuiz(); $("#inName").focus();
+  loadList(); $("#inName").focus();
 };
 
 window.addEventListener("beforeunload", e => {
   const unsentQuiz = S && !$("#vQuiz").classList.contains("hidden");
   const unsentSend = S && !$("#btnRetry").classList.contains("hidden");
-  if(unsentQuiz || unsentSend || bankDirty){ e.preventDefault(); e.returnValue = ""; }
+  if(unsentQuiz || unsentSend || bankDirty || unitsDirty){ e.preventDefault(); e.returnValue = ""; }
 });
 
 /* ================= 管理員 ================= */
@@ -467,7 +522,7 @@ function setAdmin(t){
   $("#adminBadge").textContent = "管理員：" + (ss.get("quiz.adminName") || "");
   if(!on) ss.del("quiz.adminName");
   $("#adminEntry").classList.toggle("hidden", on || !!S);
-  if(!on){ showTab("quiz"); bank = null; bankDirty = false; }
+  if(!on){ showTab("quiz"); bank = null; bankDirty = false; unitsDirty = false; settings = null; }
 }
 
 $("#lnkAdmin").onclick = e => {
@@ -494,7 +549,7 @@ async function doLogin(){
 }
 $("#btnLogout").onclick = () => {
   const go = () => { setAdmin(null); toast("已登出"); };
-  bankDirty ? confirmBox("登出", "題庫有尚未儲存的修改，登出後會遺失。", "仍要登出", go) : go();
+  (bankDirty || unitsDirty) ? confirmBox("登出", "有尚未儲存的修改，登出後會遺失。", "仍要登出", go) : go();
 };
 
 function showTab(name){
@@ -505,7 +560,7 @@ $$(".tabs button[data-tab]").forEach(b => b.onclick = () => {
   if(b.dataset.tab !== "quiz" && !token) return;
   showTab(b.dataset.tab);
   if(b.dataset.tab==="records") loadRecords();
-  if(b.dataset.tab==="bank" && !bank) loadBank();
+  if(b.dataset.tab==="bank" && !bank) showBankHome();
 });
 
 /* ---------- 作答紀錄 ---------- */
@@ -515,13 +570,19 @@ async function loadRecords(){
   try{ records = (await api("getRecords")).records; renderRecords(); }
   catch(e){ $("#recSub").textContent = e.message; }
 }
+const shownRecords = () => { const f = $("#recFilter").value; return f ? records.filter(r => r.quizId === f) : records; };
 function renderRecords(){
-  $("#recSub").textContent = records.length ? `共 ${records.length} 筆（完整資料也在 Google 試算表）` : "尚無紀錄";
+  const f = $("#recFilter").value, titles = {};
+  records.forEach(r => { titles[r.quizId] = r.title; });
+  $("#recFilter").innerHTML = `<option value="">全部測驗</option>` + Object.entries(titles).map(([id,t])=>`<option value="${esc(id)}">${esc(t)}</option>`).join("");
+  if(titles[f] !== undefined) $("#recFilter").value = f;
+  const list = shownRecords();
+  $("#recSub").textContent = list.length ? `共 ${list.length} 筆（完整資料也在 Google 試算表）` : "尚無紀錄";
   const t = $("#recTable");
-  if(!records.length){ t.innerHTML = `<tr><td class="empty">還沒有人作答</td></tr>`; return; }
-  t.innerHTML = `<tr><th>姓名</th><th>單位</th><th>登入時間</th><th>交卷時間</th><th>用時</th><th>分數</th><th></th></tr>` +
-    records.slice().reverse().map(r=>`<tr>
-      <td>${esc(r.name)}</td><td>${esc(r.unit)}</td><td>${esc(r.loginAt)}</td><td>${esc(r.submitAt)}</td><td>${fmtDur(r.seconds)}</td>
+  if(!list.length){ t.innerHTML = `<tr><td class="empty">還沒有人作答</td></tr>`; return; }
+  t.innerHTML = `<tr><th>測驗</th><th>姓名</th><th>單位</th><th>登入時間</th><th>交卷時間</th><th>用時</th><th>分數</th><th></th></tr>` +
+    list.slice().reverse().map(r=>`<tr>
+      <td>${esc(r.title)}</td><td>${esc(r.name)}</td><td>${esc(r.unit)}</td><td>${esc(r.loginAt)}</td><td>${esc(r.submitAt)}</td><td>${fmtDur(r.seconds)}</td>
       <td><b style="color:${r.passed?"var(--ok)":"var(--bad)"}">${r.score}</b> <span class="hint">(${r.correct}/${r.total})</span></td>
       <td><button class="btn sm danger" data-del="${esc(r.id)}">刪除</button></td></tr>`).join("");
   $$("[data-del]").forEach(b => b.onclick = () => confirmBox("刪除紀錄", "確定刪除這筆作答紀錄？", "刪除", async ()=>{
@@ -529,53 +590,160 @@ function renderRecords(){
     catch(e){ toast(e.message); }
   }));
 }
+$("#recFilter").onchange = renderRecords;
 $("#btnReloadRec").onclick = loadRecords;
-$("#btnClearRec").onclick = () => records.length && confirmBox("清除所有紀錄", "會一併刪除 Google 試算表中的紀錄，建議先匯出。確定清除？", "全部清除", async ()=>{
-  try{ await api("deleteRecords", {ids: records.map(r=>r.id)}); records = []; renderRecords(); toast("已清除"); }
-  catch(e){ toast(e.message); }
-});
-function recordsCSV(list){
-  const maxQ = Math.max(0, ...list.map(r=>r.items.length));
-  const head = ["測驗名稱","姓名","單位","登入時間","交卷時間","作答時間","答對題數","總題數","分數","是否及格"];
-  for(let i=0;i<maxQ;i++) head.push(`第${i+1}題作答`, `第${i+1}題結果`);
-  const rows = [head];
-  list.forEach(r=>{
-    const row = [r.title, r.name, r.unit, r.loginAt, r.submitAt, fmtDur(r.seconds), r.correct, r.total, r.score, r.passed?"及格":"未及格"];
-    r.items.forEach(it => row.push(it.chosenText, it.ok ? "O" : "X"));
-    rows.push(row);
+$("#btnClearRec").onclick = () => { const list = shownRecords(); if(!list.length) return;
+  confirmBox("清除紀錄", `會刪除目前顯示的 ${list.length} 筆紀錄（含 Google 試算表中的資料），建議先匯出。確定清除？`, "清除", async ()=>{
+    try{ const ids = list.map(r=>r.id); await api("deleteRecords", {ids}); records = records.filter(r=>!ids.includes(r.id)); renderRecords(); toast("已清除"); }
+    catch(e){ toast(e.message); }
   });
+};
+function recordsCSV(list){
+  const rows = [["測驗名稱","姓名","單位","登入時間","交卷時間","作答時間","答對題數","總題數","分數","是否及格"]];
+  list.forEach(r => rows.push([r.title, r.name, r.unit, r.loginAt, r.submitAt, fmtDur(r.seconds), r.correct, r.total, r.score, r.passed?"及格":"未及格"]));
   return toCSV(rows);
 }
-function detailCSV(list){
-  const rows = [["姓名","單位","登入時間","交卷時間","題號","題型","題目","作答","正確答案","結果"]];
-  list.forEach(r => r.items.forEach(it => rows.push([r.name, r.unit, r.loginAt, r.submitAt, it.no, it.typeLabel, it.text, it.chosenText, it.answerText, it.ok ? "正確" : "錯誤"])));
-  return toCSV(rows);
-}
-$("#btnExpRecCsv").onclick = () => records.length ? download(`作答資料_${stamp()}.csv`, recordsCSV(records), "text/csv") : toast("尚無紀錄");
-$("#btnExpDetailCsv").onclick = () => records.length ? download(`逐題明細_${stamp()}.csv`, detailCSV(records), "text/csv") : toast("尚無紀錄");
+$("#btnExpRecCsv").onclick = () => shownRecords().length ? download(`作答資料_${stamp()}.csv`, recordsCSV(shownRecords()), "text/csv") : toast("尚無紀錄");
 
-/* ---------- 題庫管理 ---------- */
-let bank = null, bankDirty = false;
+/* ---------- 測驗清單與共用單位 ---------- */
+let adminQuizzes = [], settings = null, unitsDirty = false;
+let bank = null, bankDirty = false;   // bank = 正在編輯的那份測驗
+
+const quizLink = id => location.origin + location.pathname + "?quiz=" + encodeURIComponent(id);
+
+async function loadAdminData(){
+  $("#quizTable").innerHTML = `<tr><td class="empty">載入中…</td></tr>`;
+  try{
+    const j = await api("getAdminData");
+    adminQuizzes = j.quizzes;
+    if(!unitsDirty){ settings = j.settings; renderUnits(); }
+    renderQuizTable();
+  }catch(e){ $("#quizTable").innerHTML = `<tr><td class="empty">${esc(e.message)}</td></tr>`; }
+}
+function renderQuizTable(){
+  const t = $("#quizTable");
+  if(!adminQuizzes.length){ t.innerHTML = `<tr><td class="empty">還沒有測驗，按「新增測驗」開始</td></tr>`; return; }
+  t.innerHTML = `<tr><th>測驗名稱</th><th>題數</th><th>開放作答</th><th>最後更新</th><th></th></tr>` + adminQuizzes.map(q=>`
+    <tr>
+      <td><a href="#" data-edit="${esc(q.id)}" style="color:var(--ink);font-weight:500">${esc(q.title)}</a></td>
+      <td>${q.count}</td>
+      <td><label style="cursor:pointer"><input type="checkbox" data-open="${esc(q.id)}" ${q.open?"checked":""} style="accent-color:var(--brand)"> ${q.open?"開放":"關閉"}</label></td>
+      <td class="hint">${esc(q.lastUpdate)}</td>
+      <td style="white-space:nowrap">
+        <button class="btn sm" data-edit="${esc(q.id)}">編輯</button>
+        <button class="btn sm" data-copylink="${esc(q.id)}">複製連結</button>
+        <button class="btn sm" data-dup="${esc(q.id)}">複製測驗</button>
+        <button class="btn sm danger" data-delq="${esc(q.id)}">刪除</button>
+      </td>
+    </tr>`).join("");
+  $$("[data-edit]").forEach(b => b.onclick = e => { e.preventDefault(); openQuiz(b.dataset.edit); });
+  $$("[data-open]").forEach(c => c.onchange = async () => {
+    c.disabled = true;
+    try{ await api("setOpen", {quizId:c.dataset.open, open:c.checked}); toast(c.checked ? "已開放作答" : "已關閉作答"); loadAdminData(); loadList(); }
+    catch(e){ toast(e.message); c.checked = !c.checked; c.disabled = false; }
+  });
+  $$("[data-copylink]").forEach(b => b.onclick = () => copyText(quizLink(b.dataset.copylink)));
+  $$("[data-dup]").forEach(b => b.onclick = () => {
+    const src = adminQuizzes.find(q=>q.id===b.dataset.dup);
+    askTitle("複製測驗", "會複製全部題目與設定，新測驗預設為關閉作答。", src.title + "（複本）", async title => {
+      const j = await api("createQuiz", {title, copyFrom: src.id}); toast("已複製"); await loadAdminData(); openQuiz(j.quiz.id, j.quiz);
+    });
+  });
+  $$("[data-delq]").forEach(b => b.onclick = () => {
+    const q = adminQuizzes.find(x=>x.id===b.dataset.delq);
+    confirmBox("刪除測驗", `確定刪除「${q.title}」與其 ${q.count} 題題目？（作答紀錄會保留）建議先匯出題目備份。`, "刪除", async ()=>{
+      try{ await api("deleteQuiz", {quizId:q.id}); toast("已刪除"); loadAdminData(); loadList(); }catch(e){ toast(e.message); }
+    });
+  });
+}
+function askTitle(title, hint, value, fn){
+  openModal(title, hint, `<input type="text" id="askTitle" value="${esc(value)}" style="width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;font:inherit"><div class="err" id="askErr"></div>`,
+    [{text:"取消"}, {text:"確定", cls:"primary", fn: async ()=>{
+      const v = $("#askTitle").value.trim(); if(!v){ $("#askErr").textContent = "請輸入名稱"; return true; }
+      try{ await fn(v); }catch(e){ $("#askErr").textContent = e.message; return true; }
+    }}]);
+  setTimeout(()=>{ const i=$("#askTitle"); i.focus(); i.select(); i.onkeydown = ev => { if(ev.key==="Enter"){ ev.preventDefault(); $("#mdActions .primary").click(); } }; }, 30);
+}
+$("#btnNewQuiz").onclick = () => askTitle("新增測驗", "建立後預設為關閉作答，題目準備好再開放。", "", async title => {
+  const j = await api("createQuiz", {title}); await loadAdminData(); openQuiz(j.quiz.id, j.quiz);
+});
+async function copyText(t){
+  try{ await navigator.clipboard.writeText(t); toast("已複製連結"); }
+  catch(e){ openModal("作答連結", "請手動複製：", `<input type="text" value="${esc(t)}" readonly style="width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;font:inherit" onclick="this.select()">`, [{text:"關閉"}]); }
+}
+
+/* 單位（共用） */
+function markUnits(){ unitsDirty = true; $("#btnSaveUnits").disabled = false; }
+function renderUnits(){
+  if(!settings) return;
+  const U = settings.units = settings.units || [];
+  $("#setUnitsLocked").checked = !!settings.unitsLocked;
+  const box = $("#unitEdit");
+  if(!U.length){ box.innerHTML = `<div class="hint">尚未設定單位，作答者需自行輸入。</div>`; return; }
+  box.innerHTML = U.map((u,i)=>`
+    <div class="row" style="margin-bottom:6px;flex-wrap:nowrap">
+      <input type="text" data-unit="${i}" value="${esc(u)}" style="flex:1">
+      <button class="btn sm" data-uact="up" data-i="${i}" ${i===0?"disabled":""}>↑</button>
+      <button class="btn sm" data-uact="down" data-i="${i}" ${i===U.length-1?"disabled":""}>↓</button>
+      <button class="btn sm danger" data-uact="del" data-i="${i}">刪除</button>
+    </div>`).join("");
+  box.querySelectorAll("[data-unit]").forEach(inp => {
+    inp.oninput = () => { U[+inp.dataset.unit] = inp.value; markUnits(); };
+    inp.onblur = () => { const v = inp.value.trim(), i = +inp.dataset.unit; if(!v) U.splice(i,1); else U[i] = v; renderUnits(); };
+  });
+  box.querySelectorAll("[data-uact]").forEach(b => b.onclick = () => {
+    const i = +b.dataset.i, a = b.dataset.uact;
+    if(a==="up") [U[i-1],U[i]] = [U[i],U[i-1]];
+    if(a==="down") [U[i+1],U[i]] = [U[i],U[i+1]];
+    if(a==="del") U.splice(i,1);
+    markUnits(); renderUnits();
+  });
+}
+function addUnit(){
+  const v = $("#newUnit").value.trim(); if(!v || !settings) return;
+  if(settings.units.includes(v)){ toast("已有這個單位"); return; }
+  settings.units.push(v); $("#newUnit").value = ""; markUnits(); renderUnits(); $("#newUnit").focus();
+}
+$("#btnAddUnit").onclick = addUnit;
+$("#newUnit").onkeydown = e => { if(e.key === "Enter"){ e.preventDefault(); addUnit(); } };
+$("#setUnitsLocked").onchange = e => { if(settings){ settings.unitsLocked = e.target.checked; markUnits(); } };
+$("#btnSaveUnits").onclick = async () => {
+  $("#btnSaveUnits").disabled = true;
+  try{ settings = (await api("saveSettings", {settings})).settings; unitsDirty = false; renderUnits(); toast("單位設定已儲存"); loadList(); }
+  catch(e){ $("#btnSaveUnits").disabled = false; toast("儲存失敗：" + e.message); }
+};
+
+/* ---------- 編輯單一測驗 ---------- */
+function showBankHome(){ $("#bankEdit").classList.add("hidden"); $("#bankHome").classList.remove("hidden"); loadAdminData(); }
+$("#lnkBack").onclick = e => { e.preventDefault();
+  bankDirty ? confirmBox("返回測驗清單", "這份測驗有尚未儲存的修改，返回後會遺失。", "仍要返回", ()=>{ bankDirty = false; bank = null; showBankHome(); }) : (bank = null, showBankHome());
+};
 function markDirty(){
   bankDirty = true; $("#btnSaveBank").disabled = false;
   $("#saveState").textContent = "有尚未儲存的修改"; $("#saveState").style.color = "var(--warn)";
 }
-async function loadBank(){
-  $("#bankList").innerHTML = `<div class="card empty">載入中…</div>`;
+function setClean(msg, ok){
+  bankDirty = false; $("#btnSaveBank").disabled = true;
+  $("#saveState").textContent = msg; $("#saveState").style.color = ok ? "var(--ok)" : "";
+}
+async function openQuiz(id, preloaded){
+  $("#bankHome").classList.add("hidden"); $("#bankEdit").classList.remove("hidden");
+  $("#editTitle").textContent = "載入中…"; $("#bankList").innerHTML = "";
   try{
-    bank = (await api("getBank")).bank;
-    bankDirty = false; $("#btnSaveBank").disabled = true;
-    $("#saveState").textContent = "修改後請按「儲存題庫」，作答者重新整理後生效。"; $("#saveState").style.color = "";
-    renderBank();
-  }catch(e){ $("#bankList").innerHTML = `<div class="card empty">${esc(e.message)}</div>`; }
+    bank = preloaded || (await api("getBank", {quizId:id})).quiz;
+    setClean("修改後請按「儲存測驗」，作答者重新整理後生效。");
+    renderBank(); window.scrollTo({top:0});
+  }catch(e){ toast(e.message); showBankHome(); }
 }
 function validateBank(){
+  if(!String(bank.title||"").trim()) return "請輸入測驗名稱";
   for(let i=0;i<bank.questions.length;i++){
     const q = bank.questions[i];
     if(!q.text.trim()) return `第 ${i+1} 題沒有題目`;
     if(q.options.some(o=>!String(o).trim())) return `第 ${i+1} 題有空白選項`;
     if(!q.answer.length) return `第 ${i+1} 題沒有設定正確答案`;
   }
+  if(bank.open && !bank.questions.length) return "沒有題目的測驗不能開放作答";
   return "";
 }
 $("#btnSaveBank").onclick = async () => {
@@ -583,20 +751,23 @@ $("#btnSaveBank").onclick = async () => {
   if(err){ toast(err); return; }
   $("#btnSaveBank").disabled = true; $("#saveState").textContent = "儲存中…"; $("#saveState").style.color = "";
   try{
-    bank = (await api("saveBank", {bank})).bank;
-    bankDirty = false; $("#saveState").textContent = "✓ 已儲存到 Google 試算表"; $("#saveState").style.color = "var(--ok)";
-    renderBank(); loadQuiz();
+    bank = (await api("saveBank", {quiz: bank})).quiz;
+    setClean("✓ 已儲存到 Google 試算表", true);
+    renderBank(); loadList();
   }catch(e){
     $("#btnSaveBank").disabled = false; $("#saveState").textContent = "儲存失敗：" + e.message; $("#saveState").style.color = "var(--bad)";
   }
 };
-$("#btnReloadBank").onclick = () => bankDirty ? confirmBox("放棄修改", "尚未儲存的修改都會消失。", "放棄並重新載入", loadBank) : loadBank();
+$("#btnReloadBank").onclick = () => { const id = bank.id; bankDirty ? confirmBox("放棄修改", "尚未儲存的修改都會消失。", "放棄並重新載入", ()=>openQuiz(id)) : openQuiz(id); };
+$("#btnCopyLink").onclick = () => bank && copyText(quizLink(bank.id));
 
 function renderBank(){
+  $("#editTitle").textContent = bank.title || "未命名測驗";
   $("#setTitle").value = bank.title || "";
+  $("#setOpen").checked = !!bank.open;
   $("#setPass").value = bank.pass ?? 60;
   $("#setReview").value = bank.reviewMode || "result";
-  renderUnits();
+  $("#quizLink").value = quizLink(bank.id);
   const list = $("#bankList");
   if(!bank.questions.length){ list.innerHTML = `<div class="card empty">題庫是空的，按「新增題目」開始</div>`; return; }
   list.innerHTML = bank.questions.map((q,i)=>`
@@ -658,42 +829,10 @@ function renderBank(){
     });
   });
 }
-$("#setTitle").oninput = e => { bank.title = e.target.value; markDirty(); };
+$("#setTitle").oninput = e => { bank.title = e.target.value; $("#editTitle").textContent = e.target.value || "未命名測驗"; markDirty(); };
+$("#setOpen").onchange = e => { bank.open = e.target.checked; markDirty(); };
 $("#setPass").oninput = e => { bank.pass = Math.max(0, Math.min(100, parseInt(e.target.value)||0)); markDirty(); };
 $("#setReview").onchange = e => { bank.reviewMode = e.target.value; markDirty(); };
-$("#setUnitsLocked").onchange = e => { bank.unitsLocked = e.target.checked; markDirty(); };
-
-function renderUnits(){
-  const U = bank.units = bank.units || [];
-  $("#setUnitsLocked").checked = !!bank.unitsLocked;
-  const box = $("#unitEdit");
-  if(!U.length){ box.innerHTML = `<div class="hint">尚未設定單位，作答者需自行輸入。</div>`; return; }
-  box.innerHTML = U.map((u,i)=>`
-    <div class="row" style="margin-bottom:6px;flex-wrap:nowrap">
-      <input type="text" data-unit="${i}" value="${esc(u)}" style="flex:1">
-      <button class="btn sm" data-uact="up" data-i="${i}" ${i===0?"disabled":""}>↑</button>
-      <button class="btn sm" data-uact="down" data-i="${i}" ${i===U.length-1?"disabled":""}>↓</button>
-      <button class="btn sm danger" data-uact="del" data-i="${i}">刪除</button>
-    </div>`).join("");
-  box.querySelectorAll("[data-unit]").forEach(inp => {
-    inp.oninput = () => { U[+inp.dataset.unit] = inp.value; markDirty(); };
-    inp.onblur = () => { const v = inp.value.trim(), i = +inp.dataset.unit; if(!v) U.splice(i,1); else U[i] = v; renderUnits(); };
-  });
-  box.querySelectorAll("[data-uact]").forEach(b => b.onclick = () => {
-    const i = +b.dataset.i, a = b.dataset.uact;
-    if(a==="up") [U[i-1],U[i]] = [U[i],U[i-1]];
-    if(a==="down") [U[i+1],U[i]] = [U[i],U[i+1]];
-    if(a==="del") U.splice(i,1);
-    markDirty(); renderUnits();
-  });
-}
-function addUnit(){
-  const v = $("#newUnit").value.trim(); if(!v) return;
-  if(bank.units.includes(v)){ toast("已有這個單位"); return; }
-  bank.units.push(v); $("#newUnit").value = ""; markDirty(); renderUnits(); $("#newUnit").focus();
-}
-$("#btnAddUnit").onclick = addUnit;
-$("#newUnit").onkeydown = e => { if(e.key === "Enter"){ e.preventDefault(); addUnit(); } };
 $("#btnAddQ").onclick = () => { bank.questions.push({type:"single", text:"", options:["","","",""], answer:[0], explain:""}); markDirty(); renderBank(); window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"}); };
 
 /* 匯出／匯入題目 */
@@ -711,17 +850,21 @@ function questionsCSV(){
   });
   return toCSV(rows);
 }
-$("#btnExpQCsv").onclick = () => bank && download(`題目_${stamp()}.csv`, questionsCSV(), "text/csv");
-$("#btnExpQJson").onclick = () => bank && download(`題庫_${stamp()}.json`, JSON.stringify(bank, null, 2), "application/json");
+$("#btnExpQCsv").onclick = () => bank && download(`題目_${bank.title}_${stamp()}.csv`, questionsCSV(), "text/csv");
+$("#btnExpQJson").onclick = () => bank && download(`題庫_${bank.title}_${stamp()}.json`, JSON.stringify({title:bank.title, pass:bank.pass, reviewMode:bank.reviewMode, questions:bank.questions}, null, 2), "application/json");
 $("#btnImpQ").onclick = () => $("#fileImp").click();
 $("#fileImp").onchange = async e => {
   const f = e.target.files[0]; e.target.value = ""; if(!f) return;
   try{
     const txt = (await f.text()).replace(/^﻿/,"");
     let nb;
-    if(/\.json$/i.test(f.name)){ nb = JSON.parse(txt); if(!Array.isArray(nb.questions)) throw 0; }
+    if(/\.json$/i.test(f.name)){
+      const j = JSON.parse(txt); if(!Array.isArray(j.questions)) throw 0;
+      nb = Object.assign({}, bank, { questions: j.questions.map(q => Object.assign({}, q, {id: undefined})) },
+        j.pass != null ? {pass: j.pass} : {}, j.reviewMode ? {reviewMode: j.reviewMode} : {});
+    }
     else nb = Object.assign({}, bank, {questions: parseQCSV(txt)});
-    confirmBox("匯入題目", `讀到 ${nb.questions.length} 題，將取代目前題庫（按「儲存題庫」後才會生效）。`, "匯入", ()=>{ bank = nb; markDirty(); renderBank(); toast("已匯入，記得按「儲存題庫」"); });
+    confirmBox("匯入題目", `讀到 ${nb.questions.length} 題，將取代這份測驗的題目（按「儲存測驗」後才會生效）。`, "匯入", ()=>{ bank = nb; markDirty(); renderBank(); toast("已匯入，記得按「儲存測驗」"); });
   }catch(err){ toast("檔案格式無法辨識"); }
 };
 function parseCSVRows(t){
@@ -748,7 +891,7 @@ function parseQCSV(t){
 
 /* ---------- 啟動 ---------- */
 setAdmin(token);
-loadQuiz();
+loadList();
 })();
 </script>
 </body>
