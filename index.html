@@ -54,7 +54,8 @@ textarea{resize:vertical;min-height:70px}
 .progress{height:6px;background:var(--brand-soft);border-radius:3px;overflow:hidden;margin:8px 0 22px}
 .progress i{display:block;height:100%;background:var(--brand);transition:width .25s}
 .qtype{display:inline-block;font-size:12px;padding:2px 8px;border-radius:4px;background:var(--brand-soft);color:var(--brand-dark);margin-bottom:10px}
-.qtext{font-size:19px;font-weight:500;margin:0 0 18px;line-height:1.55}
+.qtext{font-size:19px;font-weight:500;margin:0 0 18px;line-height:1.55;white-space:pre-line}
+#rReview .row > span:last-child, #rReview .row > b{white-space:pre-line}
 .opt{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border:1px solid var(--line);border-radius:6px;margin-bottom:10px;cursor:pointer;transition:border-color .15s,background .15s;font-size:16px}
 .opt:hover{border-color:var(--brand-mid);background:#FAFCFB}
 .opt.sel{border-color:var(--brand);background:var(--brand-soft);box-shadow:inset 3px 0 0 var(--brand)}
@@ -138,9 +139,8 @@ textarea.ans{min-height:150px;font-size:16px;line-height:1.6}
         <label class="f" for="inName">姓名</label>
         <input type="text" id="inName" placeholder="請輸入姓名" maxlength="50">
         <label class="f" for="inUnit" id="lblUnit">單位</label>
-        <input type="text" id="inUnit" list="unitList" placeholder="選擇或輸入單位" maxlength="50">
-        <datalist id="unitList"></datalist>
-        <select id="inUnitSel" class="hidden"></select>
+        <select id="inUnitSel"></select>
+        <input type="text" id="inUnit" class="hidden" placeholder="請輸入單位名稱" maxlength="50" style="margin-top:8px">
         <label class="f">登入時間</label>
         <div id="nowClock" class="hint" style="font-size:15px;color:var(--ink)"></div>
         <div class="err" id="loginErr"></div>
@@ -384,16 +384,22 @@ const fixedQuiz = (()=>{ try{ return new URLSearchParams(location.search).get("q
 
 function applyUnits(m){
   const units = m.units || [];
-  $("#unitList").innerHTML = units.map(u=>`<option value="${esc(u)}">`).join("");
   const locked = !!m.unitsLocked && units.length > 0;
   const sel = $("#inUnitSel"), keep = sel.value;
-  sel.innerHTML = `<option value="">請選擇單位</option>` + units.map(u=>`<option value="${esc(u)}">${esc(u)}</option>`).join("");
-  if(units.includes(keep)) sel.value = keep;
-  sel.classList.toggle("hidden", !locked);
-  $("#inUnit").classList.toggle("hidden", locked);
-  $("#lblUnit").setAttribute("for", locked ? "inUnitSel" : "inUnit");
+  if(!units.length){ sel.classList.add("hidden"); $("#inUnit").classList.remove("hidden"); $("#lblUnit").setAttribute("for", "inUnit"); return; }
+  sel.innerHTML = `<option value="">請選擇單位</option>` + units.map(u=>`<option value="${esc(u)}">${esc(u)}</option>`).join("") +
+    (locked ? "" : `<option value="__other">其他（自行輸入）</option>`);
+  if(units.includes(keep) || (!locked && keep === "__other")) sel.value = keep;
+  sel.classList.remove("hidden");
+  $("#lblUnit").setAttribute("for", "inUnitSel");
+  toggleOtherUnit();
 }
-function setHeaderTitle(t){ $("#appTitle").textContent = t || "互動問答測驗"; document.title = t || "互動問答測驗"; }
+function toggleOtherUnit(){ $("#inUnit").classList.toggle("hidden", $("#inUnitSel").value !== "__other"); }
+$("#inUnitSel").onchange = () => { toggleOtherUnit(); if($("#inUnitSel").value === "__other") $("#inUnit").focus(); };
+function currentUnit(){
+  const sel = $("#inUnitSel");
+  return (sel.classList.contains("hidden") || sel.value === "__other" ? $("#inUnit").value : sel.value).trim();
+}
 
 function notice(msg, bad){ $("#bankNotice").textContent = msg; $("#bankNotice").style.color = bad ? "var(--bad)" : ""; }
 function refreshPick(){
@@ -438,7 +444,7 @@ $("#loginForm").addEventListener("submit", async e => {
   if(!meta) return;
   const quizId = $("#inQuiz").value;
   const locked = meta.unitsLocked && (meta.units||[]).length;
-  const name = $("#inName").value.trim(), unit = (locked ? $("#inUnitSel").value : $("#inUnit").value).trim();
+  const name = $("#inName").value.trim(), unit = currentUnit();
   if(!quizId){ $("#loginErr").textContent = "請選擇測驗"; return; }
   if(!name){ $("#loginErr").textContent = "請輸入姓名"; $("#inName").focus(); return; }
   if(!unit){ $("#loginErr").textContent = "請選擇或輸入單位"; return; }
