@@ -8,94 +8,128 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#f5f3ee; --card:#fff; --ink:#1f2a2e; --muted:#6b7478; --line:#e3dfd6;
-  --brand:#2f6f5e; --brand-soft:#e4efe9; --ok:#2f7d4f; --ok-soft:#e5f3ea;
-  --bad:#b4483c; --bad-soft:#f8e7e4; --warn:#a46a14;
+  --bg:#F3F6F5; --card:#fff; --ink:#1E2B28; --muted:#5F6B68; --line:#D9E1DE;
+  --brand:#0F6E56; --brand-dark:#085041; --brand-soft:#E1F5EE; --brand-mid:#9FE1CB;
+  --ok:#0F6E56; --ok-soft:#E1F5EE; --bad:#B5452A; --bad-soft:#FAECE7; --warn:#97600F;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans TC",system-ui,sans-serif;font-size:16px;line-height:1.6}
-.wrap{max-width:760px;margin:0 auto;padding:24px 16px 64px}
-header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px}
-header.top h1{font-size:20px;margin:0;font-weight:700;letter-spacing:.02em}
-.tabs{display:flex;gap:4px;background:#ebe7de;padding:4px;border-radius:10px}
-.tabs button{border:0;background:transparent;padding:6px 12px;border-radius:7px;font:inherit;font-size:14px;color:var(--muted);cursor:pointer}
-.tabs button.on{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px;margin-bottom:16px}
-h2{font-size:18px;margin:0 0 4px}
-.sub{color:var(--muted);font-size:14px;margin:0 0 20px}
-label.f{display:block;font-size:14px;font-weight:500;margin:14px 0 6px}
-input[type=text],select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;font:inherit;background:#fff;color:var(--ink)}
-input[type=text]:focus,select:focus,textarea:focus{outline:2px solid var(--brand-soft);border-color:var(--brand)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans TC",system-ui,sans-serif;font-size:16px;line-height:1.65}
+.banner{background:var(--brand);color:#fff}
+.banner-in{max-width:760px;margin:0 auto;padding:18px 16px 20px;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.banner .org{font-size:13px;color:var(--brand-mid);letter-spacing:.04em;margin-bottom:2px}
+.banner h1{font-size:22px;margin:0;font-weight:700;letter-spacing:.02em}
+.banner .admin{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.banner .badge{font-size:12px;padding:3px 10px;border-radius:4px;background:var(--brand-dark);color:var(--brand-soft)}
+.wrap{max-width:760px;margin:0 auto;padding:20px 16px 64px}
+.tabs{display:flex;gap:2px;background:var(--brand-dark);padding:3px;border-radius:8px}
+.tabs button{border:0;background:transparent;padding:6px 12px;border-radius:6px;font:inherit;font-size:14px;color:var(--brand-mid);cursor:pointer}
+.tabs button:hover{color:#fff}
+.tabs button.on{background:#fff;color:var(--brand-dark);font-weight:500}
+.tabs #btnLogout{color:#F5C4B3}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:24px;margin-bottom:16px}
+.card.lead{border-top:4px solid var(--brand)}
+h2{font-size:18px;margin:0 0 4px;color:var(--ink)}
+.sub{color:var(--muted);font-size:14px;margin:0 0 18px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 18px}
+.chip{font-size:12px;padding:3px 10px;border-radius:4px;background:var(--brand-soft);color:var(--brand-dark)}
+label.f{display:block;font-size:14px;font-weight:500;margin:16px 0 6px;color:var(--ink)}
+input[type=text],input[type=password],select,textarea{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:6px;font:inherit;font-size:16px;background:#fff;color:var(--ink)}
+input[type=text]:focus,input[type=password]:focus,select:focus,textarea:focus{outline:3px solid var(--brand-soft);border-color:var(--brand)}
 textarea{resize:vertical;min-height:70px}
-.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;color:var(--ink);padding:9px 16px;border-radius:9px;font:inherit;font-size:15px;cursor:pointer}
-.btn:hover{background:#faf8f4}
-.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
-.btn.primary:hover{filter:brightness(1.07)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line);background:#fff;color:var(--ink);padding:9px 16px;border-radius:6px;font:inherit;font-size:15px;cursor:pointer}
+.btn:hover{background:#F7FAF9;border-color:#C3CEC9}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:500}
+.btn.primary:hover{background:var(--brand-dark)}
 .btn.danger{color:var(--bad)}
 .btn.sm{padding:5px 10px;font-size:13px}
 .btn:disabled{opacity:.45;cursor:not-allowed}
+#btnStart{min-width:140px;padding:11px 22px;font-size:16px}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .row.end{justify-content:flex-end}
 .between{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 .err{color:var(--bad);font-size:14px;min-height:20px;margin-top:8px}
-.meta{display:flex;gap:16px;flex-wrap:wrap;font-size:14px;color:var(--muted);background:var(--brand-soft);padding:10px 14px;border-radius:10px;margin-bottom:16px}
+.meta{display:flex;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--brand-dark);margin-bottom:14px}
+.meta>span{background:#fff;border:1px solid var(--line);padding:5px 10px;border-radius:6px}
 .meta b{color:var(--ink);font-weight:500}
-.progress{height:6px;background:#ebe7de;border-radius:6px;overflow:hidden;margin:6px 0 20px}
+.progress{height:6px;background:var(--brand-soft);border-radius:3px;overflow:hidden;margin:8px 0 22px}
 .progress i{display:block;height:100%;background:var(--brand);transition:width .25s}
-.qtype{display:inline-block;font-size:12px;padding:2px 8px;border-radius:20px;background:#ebe7de;color:var(--muted);margin-bottom:8px}
-.qtext{font-size:18px;font-weight:500;margin:0 0 16px}
-.opt{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:border-color .15s,background .15s}
-.opt:hover{border-color:#c9c3b6}
-.opt.sel{border-color:var(--brand);background:var(--brand-soft)}
-.opt input{margin-top:5px;accent-color:var(--brand)}
+.qtype{display:inline-block;font-size:12px;padding:2px 8px;border-radius:4px;background:var(--brand-soft);color:var(--brand-dark);margin-bottom:10px}
+.qtext{font-size:19px;font-weight:500;margin:0 0 18px;line-height:1.55}
+.opt{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border:1px solid var(--line);border-radius:6px;margin-bottom:10px;cursor:pointer;transition:border-color .15s,background .15s;font-size:16px}
+.opt:hover{border-color:var(--brand-mid);background:#FAFCFB}
+.opt.sel{border-color:var(--brand);background:var(--brand-soft);box-shadow:inset 3px 0 0 var(--brand)}
+.opt input{margin-top:5px;accent-color:var(--brand);width:18px;height:18px;flex-shrink:0}
 .opt.right{border-color:var(--ok);background:var(--ok-soft)}
 .opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
-.dots{display:flex;gap:6px;flex-wrap:wrap;margin-top:16px}
-.dots button{width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:#fff;font:inherit;font-size:13px;cursor:pointer;color:var(--muted)}
-.dots button.done{background:var(--brand-soft);border-color:var(--brand);color:var(--brand)}
-.dots button.cur{outline:2px solid var(--brand);outline-offset:1px}
-.score{font-size:48px;font-weight:700;color:var(--brand);line-height:1.1}
-.review{border-top:1px solid var(--line);padding-top:16px;margin-top:16px}
+.dots{display:flex;gap:6px;flex-wrap:wrap;margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.dots button{width:32px;height:32px;border-radius:6px;border:1px solid var(--line);background:#fff;font:inherit;font-size:13px;cursor:pointer;color:var(--muted)}
+.dots button.done{background:var(--brand-soft);border-color:var(--brand-mid);color:var(--brand-dark)}
+.dots button.cur{border-color:var(--brand);background:var(--brand);color:#fff}
+.score{--p:0;--ring:var(--brand);position:relative;width:118px;height:118px;border-radius:50%;background:conic-gradient(var(--ring) calc(var(--p) * 1%), #E3EAE7 0);display:grid;place-items:center;margin-left:auto}
+.score::before{content:"";position:absolute;inset:10px;background:#fff;border-radius:50%}
+.score span{position:relative;font-size:32px;font-weight:700;color:var(--ink);line-height:1}
+.score small{font-size:14px;font-weight:500;color:var(--muted);margin-left:2px}
+.result-head{display:flex;justify-content:space-between;align-items:center;gap:16px}
+.verdict{display:inline-block;font-size:14px;font-weight:500;padding:4px 12px;border-radius:4px;margin-top:8px}
+.verdict.pass{background:var(--ok-soft);color:var(--brand-dark)}
+.verdict.fail{background:var(--bad-soft);color:var(--bad)}
+.review{border-top:1px solid var(--line);padding-top:16px;margin-top:20px}
 .review .item{margin-bottom:18px}
-.tag{font-size:12px;padding:2px 8px;border-radius:20px;font-weight:500}
-.tag.ok{background:var(--ok-soft);color:var(--ok)}
+.tag{font-size:12px;padding:2px 8px;border-radius:4px;font-weight:500}
+.tag.ok{background:var(--ok-soft);color:var(--brand-dark)}
 .tag.bad{background:var(--bad-soft);color:var(--bad)}
-.explain{font-size:14px;color:var(--muted);background:#faf8f4;padding:8px 12px;border-radius:8px;margin-top:6px}
+.explain{font-size:14px;color:var(--muted);background:#F7FAF9;border-left:3px solid var(--brand-mid);padding:8px 12px;margin-top:6px}
 table{width:100%;border-collapse:collapse;font-size:14px}
-th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
-th{color:var(--muted);font-weight:500;font-size:13px}
-.qedit{border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:10px}
+th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--brand-dark);font-weight:500;font-size:13px;background:var(--brand-soft)}
+.qedit{border:1px solid var(--line);border-radius:8px;padding:16px;margin-bottom:12px}
 .qedit .opts .orow{display:flex;gap:8px;align-items:center;margin-bottom:6px}
 .qedit .opts .orow input[type=text]{flex:1}
 .hint{font-size:13px;color:var(--muted)}
 .empty{color:var(--muted);text-align:center;padding:24px 0}
-.modal{position:fixed;inset:0;background:rgba(20,25,27,.45);display:flex;align-items:center;justify-content:center;padding:16px;z-index:10}
-.modal .box{background:#fff;border-radius:14px;padding:22px;max-width:620px;width:100%;max-height:85vh;display:flex;flex-direction:column;gap:12px}
-.modal textarea{flex:1;min-height:240px;font-family:ui-monospace,Menlo,monospace;font-size:12px}
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:9px;font-size:14px;z-index:20;opacity:0;transition:opacity .2s;pointer-events:none}
+.modal{position:fixed;inset:0;background:rgba(8,40,32,.45);display:flex;align-items:center;justify-content:center;padding:16px;z-index:10}
+.modal .box{background:#fff;border-radius:8px;border-top:4px solid var(--brand);padding:22px;max-width:620px;width:100%;max-height:85vh;overflow:auto;display:flex;flex-direction:column;gap:12px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--brand-dark);color:#fff;padding:10px 18px;border-radius:6px;font-size:14px;z-index:20;opacity:0;transition:opacity .2s;pointer-events:none}
 .toast.show{opacity:1}
+.req{color:var(--bad);font-size:13px;font-weight:500;margin-left:6px;white-space:nowrap}
+.tag.neu{background:#EEF2F0;color:var(--muted)}
+.dots button.miss{border-color:var(--bad);color:var(--bad);background:var(--bad-soft)}
+textarea.ans{min-height:150px;font-size:16px;line-height:1.6}
+.anstext{white-space:pre-wrap;background:#F7FAF9;border:1px solid var(--line);border-radius:6px;padding:10px 12px;font-size:15px;margin-top:6px}
 .hidden{display:none!important}
-@media (max-width:520px){.card{padding:18px}.qtext{font-size:17px}header.top{flex-direction:column;align-items:flex-start}}
+@media (max-width:520px){
+  .card{padding:18px}.qtext{font-size:18px}.banner h1{font-size:20px}
+  .result-head{flex-direction:column-reverse;align-items:flex-start}.score{margin-left:0}
+  #btnStart{width:100%}
+}
 </style>
 </head>
 <body>
+<header class="banner">
+  <div class="banner-in">
+    <div>
+      <div class="org" id="orgName"></div>
+      <h1 id="appTitle">互動問答測驗</h1>
+    </div>
+    <div class="admin">
+      <span class="badge hidden" id="adminBadge">管理員</span>
+      <nav class="tabs hidden" id="navTabs">
+        <button data-tab="quiz" class="on">作答</button>
+        <button data-tab="records">作答紀錄</button>
+        <button data-tab="bank">題庫管理</button>
+        <button id="btnLogout">登出</button>
+      </nav>
+    </div>
+  </div>
+</header>
 <div class="wrap">
-  <header class="top">
-    <h1 id="appTitle">互動問答測驗</h1>
-    <span class="tag ok hidden" id="adminBadge" style="margin-left:auto">管理員</span>
-    <nav class="tabs hidden" id="navTabs">
-      <button data-tab="quiz" class="on">作答</button>
-      <button data-tab="records">作答紀錄</button>
-      <button data-tab="bank">題庫管理</button>
-      <button id="btnLogout" style="color:var(--bad)">登出</button>
-    </nav>
-  </header>
 
   <!-- 作答 -->
   <section id="tab-quiz">
-    <div class="card" id="vLogin">
-      <h2>登入</h2>
-      <p class="sub">請填寫姓名與單位，登入時間會自動記錄。</p>
+    <div class="card lead" id="vLogin">
+      <h2>開始測驗</h2>
+      <p class="sub" style="margin-bottom:10px">請填寫姓名與單位後開始作答。</p>
+      <div class="chips"><span class="chip">免登入帳號</span><span class="chip">登入時間自動記錄</span><span class="chip">交卷前可修改姓名</span></div>
       <form id="loginForm" autocomplete="off">
         <div id="quizPick" class="hidden">
           <label class="f" for="inQuiz" style="margin-top:0">測驗</label>
@@ -145,16 +179,15 @@ th{color:var(--muted);font-weight:500;font-size:13px}
       <div class="row" style="margin-top:16px"><button class="btn primary hidden" id="btnRetry">重新送出</button></div>
     </div>
 
-    <div class="card hidden" id="vResult">
-      <div class="between">
+    <div class="card lead hidden" id="vResult">
+      <div class="result-head">
         <div>
           <h2>作答完成</h2>
           <p class="sub" id="rInfo" style="margin:0"></p>
+          <div class="hint" id="rDetail" style="margin-top:8px"></div>
+          <span class="verdict" id="rVerdict"></span>
         </div>
-        <div style="text-align:right">
-          <div class="score" id="rScore"></div>
-          <div class="hint" id="rDetail"></div>
-        </div>
+        <div class="score" id="rScore"><span></span></div>
       </div>
       <div class="row" style="margin-top:16px">
         <span class="hint" style="color:var(--ok)">✓ 成績已送出</span>
@@ -268,6 +301,7 @@ th{color:var(--muted);font-weight:500;font-size:13px}
    Cloudflare Worker：https://quiz-api.你的子網域.workers.dev
    Apps Script     ：https://script.google.com/macros/s/部署ID/exec          */
 const API_URL = "https://quiz-api.jasminelian7.workers.dev";
+const ORG_NAME = "";   // 顯示在標題上方的機構名稱，例如 "常春藤居家長照"；留空則不顯示
 /* ================================================================ */
 
 (function(){
@@ -276,7 +310,7 @@ const $ = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const clone = o => JSON.parse(JSON.stringify(o));
-const TYPE_LABEL = {single:"單選題", multi:"複選題", tf:"是非題"};
+const TYPE_LABEL = {single:"單選題", multi:"複選題", tf:"是非題", text:"問答題"};
 const LETTERS = "ABCDEFGHIJ";
 const pad = n => String(n).padStart(2,"0");
 const fmt = d => `${d.getFullYear()}/${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
@@ -415,7 +449,7 @@ $("#loginForm").addEventListener("submit", async e => {
   catch(err){ $("#loginErr").textContent = err.message; $("#btnStart").disabled = false; refreshPick(); return; }
   if(!quiz.questions.length){ $("#loginErr").textContent = "這份測驗沒有題目"; refreshPick(); return; }
   const now = new Date();
-  S = { quizId, title: quiz.title, name, unit, loginDate: now, loginAt: fmt(now), qs: quiz.questions, ans: quiz.questions.map(()=>[]), cur: 0 };
+  S = { quizId, title: quiz.title, name, unit, loginDate: now, loginAt: fmt(now), qs: quiz.questions, ans: quiz.questions.map(q => q.type === "text" ? "" : []), cur: 0, showMiss: false };
   setHeaderTitle(quiz.title);
   $("#mName").textContent = name; $("#mUnit").textContent = unit; $("#mLogin").textContent = S.loginAt;
   $("#vLogin").classList.add("hidden"); $("#adminEntry").classList.add("hidden"); $("#vQuiz").classList.remove("hidden");
@@ -424,28 +458,41 @@ $("#loginForm").addEventListener("submit", async e => {
   renderQ();
 });
 
-function renderQ(){
-  const q = S.qs[S.cur], n = S.qs.length, chosen = S.ans[S.cur];
-  const answered = S.ans.filter(a=>a.length).length;
-  $("#qCounter").textContent = `第 ${S.cur+1} / ${n} 題`;
+const isAnswered = i => { const a = S.ans[i]; return Array.isArray(a) ? a.length > 0 : !!String(a || "").trim(); };
+const missingRequired = () => S.qs.map((q,i)=>i).filter(i => S.qs[i].required && !isAnswered(i));
+function renderProgress(){
+  const n = S.qs.length, answered = S.qs.filter((_,i)=>isAnswered(i)).length;
   $("#qAnswered").textContent = `已作答 ${answered} 題`;
   $("#qBar").style.width = (answered/n*100) + "%";
+  $("#qDots").innerHTML = S.qs.map((q,i)=>{
+    const cls = [isAnswered(i) ? "done" : "", i===S.cur ? "cur" : "", S.showMiss && q.required && !isAnswered(i) ? "miss" : ""].join(" ");
+    return `<button class="${cls}" data-i="${i}" title="${q.required ? "必填" : ""}">${i+1}</button>`;
+  }).join("");
+  $$("#qDots button").forEach(b => b.onclick = () => { S.cur = +b.dataset.i; renderQ(); });
+}
+function renderQ(){
+  const q = S.qs[S.cur], n = S.qs.length;
+  $("#qCounter").textContent = `第 ${S.cur+1} / ${n} 題`;
   $("#qType").textContent = TYPE_LABEL[q.type];
-  $("#qText").textContent = q.text;
-  const multi = q.type === "multi";
-  $("#qOpts").innerHTML = q.options.map((o,i)=>`
-    <label class="opt ${chosen.includes(i)?"sel":""}">
-      <input type="${multi?"checkbox":"radio"}" name="opt" value="${i}" ${chosen.includes(i)?"checked":""}>
-      <span><b>${LETTERS[i]}.</b> ${esc(o)}</span>
-    </label>`).join("");
-  $$("#qOpts input").forEach(inp => inp.onchange = () => {
-    S.ans[S.cur] = $$("#qOpts input").filter(x=>x.checked).map(x=>+x.value);
-    renderQ();
-  });
+  $("#qText").innerHTML = esc(q.text) + (q.required ? `<span class="req">＊必填</span>` : "");
+  if(q.type === "text"){
+    $("#qOpts").innerHTML = `<textarea class="ans" id="qTextAns" maxlength="2000" placeholder="請在這裡輸入你的回答">${esc(S.ans[S.cur])}</textarea>`;
+    $("#qTextAns").oninput = e => { S.ans[S.cur] = e.target.value; renderProgress(); };
+  } else {
+    const chosen = S.ans[S.cur], multi = q.type === "multi";
+    $("#qOpts").innerHTML = q.options.map((o,i)=>`
+      <label class="opt ${chosen.includes(i)?"sel":""}">
+        <input type="${multi?"checkbox":"radio"}" name="opt" value="${i}" ${chosen.includes(i)?"checked":""}>
+        <span><b>${LETTERS[i]}.</b> ${esc(o)}</span>
+      </label>`).join("");
+    $$("#qOpts input").forEach(inp => inp.onchange = () => {
+      S.ans[S.cur] = $$("#qOpts input").filter(x=>x.checked).map(x=>+x.value);
+      renderQ();
+    });
+  }
   $("#btnPrev").disabled = S.cur === 0;
   $("#btnNext").disabled = S.cur === n-1;
-  $("#qDots").innerHTML = S.qs.map((_,i)=>`<button class="${S.ans[i].length?"done":""} ${i===S.cur?"cur":""}" data-i="${i}">${i+1}</button>`).join("");
-  $$("#qDots button").forEach(b => b.onclick = () => { S.cur = +b.dataset.i; renderQ(); });
+  renderProgress();
 }
 $("#btnPrev").onclick = () => { if(S.cur>0){ S.cur--; renderQ(); } };
 $("#btnNext").onclick = () => { if(S.cur<S.qs.length-1){ S.cur++; renderQ(); } };
@@ -460,7 +507,13 @@ $("#lnkEditName").onclick = e => {
   setTimeout(()=>{ const i = $("#edName"); if(i) i.focus(); }, 30);
 };
 $("#btnSubmit").onclick = () => {
-  const left = S.ans.filter(a=>!a.length).length;
+  const miss = missingRequired();
+  if(miss.length){
+    S.showMiss = true; S.cur = miss[0]; renderQ();
+    toast(`第 ${miss.map(i=>i+1).join("、")} 題為必填，請作答後再交卷`);
+    return;
+  }
+  const left = S.qs.filter((_,i)=>!isAnswered(i)).length;
   const locked = meta.unitsLocked && (meta.units||[]).length;
   const box = "width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;font:inherit";
   openModal("確認交卷", (left ? `還有 ${left} 題未作答。` : "") + "請確認姓名與單位，交卷後無法修改。",
@@ -500,24 +553,44 @@ $("#btnRetry").onclick = send;
 
 function showResult(r){
   $("#vSending").classList.add("hidden"); $("#vResult").classList.remove("hidden");
-  $("#rScore").textContent = r.score + " 分";
-  $("#rDetail").innerHTML = `答對 ${r.correct} / ${r.total} 題 · <span style="color:${r.passed?"var(--ok)":"var(--bad)"}">${r.passed?"及格":"未及格"}</span>`;
+  const textCount = r.items.filter(x=>x.type==="text").length;
+  if(r.score === null || r.score === undefined){
+    $("#rScore").innerHTML = `<span style="font-size:22px">已送出</span>`;
+    $("#rScore").style.setProperty("--p", 100);
+    $("#rScore").style.setProperty("--ring", "var(--brand-mid)");
+    $("#rDetail").textContent = "本測驗為問答題，不計分";
+    $("#rVerdict").className = "verdict pass";
+    $("#rVerdict").textContent = "✓ 感謝作答，管理員會再檢閱你的回答";
+  } else {
+    $("#rScore").innerHTML = `<span>${r.score}<small>分</small></span>`;
+    $("#rScore").style.setProperty("--p", r.score);
+    $("#rScore").style.setProperty("--ring", r.passed ? "var(--brand)" : "var(--bad)");
+    $("#rDetail").textContent = `答對 ${r.correct} / ${r.total} 題` + (textCount ? `（另有 ${textCount} 題問答題不計分）` : "");
+    $("#rVerdict").className = "verdict " + (r.passed ? "pass" : "fail");
+    $("#rVerdict").textContent = r.passed ? "✓ 及格，做得很好！" : "未達及格分數，再複習一下重點吧";
+  }
   $("#rInfo").textContent = `${S.name}（${S.unit}）｜登入 ${S.loginAt}｜交卷 ${r.submitAt}｜用時 ${fmtDur(S.payload.seconds)}`;
+  const tagOf = it => it.type === "text"
+    ? `<span class="tag neu" style="flex-shrink:0;margin-top:2px">${it.answered ? "已作答" : "未作答"}</span>`
+    : `<span class="tag ${it.ok?"ok":"bad"}" style="flex-shrink:0;margin-top:2px">${it.ok?"正確":"錯誤"}</span>`;
   if(r.review === "result"){
-    const wrong = r.items.filter(x=>!x.ok).length;
-    $("#rReview").innerHTML = `<p class="hint" style="margin-top:0">${wrong ? `有 ${wrong} 題答錯，以下標示各題結果。` : "全部答對！"}</p>` +
+    const wrong = r.items.filter(x=>x.type!=="text" && !x.ok).length;
+    const graded = r.items.length - textCount;
+    const head = !graded ? "以下為你的作答狀況。" : wrong ? `有 ${wrong} 題答錯，以下標示各題結果。` : "選擇題全部答對！";
+    $("#rReview").innerHTML = `<p class="hint" style="margin-top:0">${head}</p>` +
       r.items.map(it=>`<div class="row" style="margin-bottom:10px;flex-wrap:nowrap;align-items:flex-start">
-        <span class="tag ${it.ok?"ok":"bad"}" style="flex-shrink:0;margin-top:2px">${it.ok?"正確":"錯誤"}</span>
-        <span>${it.no}. ${esc(it.text)}</span></div>`).join("");
+        ${tagOf(it)}<span>${it.no}. ${esc(it.text)}</span></div>`).join("");
   } else {
     $("#rReview").innerHTML = r.items.map(it=>`
       <div class="item">
-        <div class="row" style="margin-bottom:6px"><span class="tag ${it.ok?"ok":"bad"}">${it.ok?"正確":"錯誤"}</span><b>${it.no}. ${esc(it.text)}</b></div>
-        ${(it.options||[]).map((o,k)=>{
-          const isAns = it.answer.includes(k), isCh = it.chosen.includes(k);
-          return `<div class="opt ${isAns?"right":(isCh?"wrong":"")}" style="cursor:default;padding:8px 12px"><span><b>${LETTERS[k]}.</b> ${esc(o)}${isCh?" 　← 你的答案":""}</span></div>`;
-        }).join("")}
-        ${r.review === "full" && it.explain ? `<div class="explain">解析：${esc(it.explain)}</div>` : ""}
+        <div class="row" style="margin-bottom:6px;flex-wrap:nowrap;align-items:flex-start">${tagOf(it)}<b>${it.no}. ${esc(it.text)}</b></div>
+        ${it.type === "text"
+          ? `<div class="anstext">${it.textAns ? esc(it.textAns) : '<span class="hint">（未作答）</span>'}</div>`
+          : (it.options||[]).map((o,k)=>{
+              const isAns = it.answer.includes(k), isCh = it.chosen.includes(k);
+              return `<div class="opt ${isAns?"right":(isCh?"wrong":"")}" style="cursor:default;padding:8px 12px"><span><b>${LETTERS[k]}.</b> ${esc(o)}${isCh?" 　← 你的答案":""}</span></div>`;
+            }).join("")}
+        ${r.review === "full" && it.explain ? `<div class="explain">${it.type === "text" ? "參考說明" : "解析"}：${esc(it.explain)}</div>` : ""}
       </div>`).join("");
   }
   window.scrollTo({top:0,behavior:"smooth"});
@@ -604,11 +677,16 @@ function renderRecords(){
   $("#recSub").textContent = list.length ? `共 ${list.length} 筆（完整資料也在 Google 試算表）` : "尚無紀錄";
   const t = $("#recTable");
   if(!list.length){ t.innerHTML = `<tr><td class="empty">還沒有人作答</td></tr>`; return; }
-  t.innerHTML = `<tr><th>測驗</th><th>姓名</th><th>單位</th><th>登入時間</th><th>交卷時間</th><th>用時</th><th>分數</th><th></th></tr>` +
+  t.innerHTML = `<tr><th>測驗</th><th>姓名</th><th>單位</th><th>登入時間</th><th>交卷時間</th><th>用時</th><th>分數</th><th>問答</th><th></th></tr>` +
     list.slice().reverse().map(r=>`<tr>
       <td>${esc(r.title)}</td><td>${esc(r.name)}</td><td>${esc(r.unit)}</td><td>${esc(r.loginAt)}</td><td>${esc(r.submitAt)}</td><td>${fmtDur(r.seconds)}</td>
-      <td><b style="color:${r.passed?"var(--ok)":"var(--bad)"}">${r.score}</b> <span class="hint">(${r.correct}/${r.total})</span></td>
+      <td>${r.score === null ? '<span class="hint">不計分</span>' : `<b style="color:${r.passed?"var(--ok)":"var(--bad)"}">${r.score}</b> <span class="hint">(${r.correct}/${r.total})</span>`}</td>
+      <td>${r.textLog ? `<button class="btn sm" data-txt="${esc(r.id)}">查看</button>` : '<span class="hint">—</span>'}</td>
       <td><button class="btn sm danger" data-del="${esc(r.id)}">刪除</button></td></tr>`).join("");
+  $$("[data-txt]").forEach(b => b.onclick = () => {
+    const r = records.find(x=>x.id===b.dataset.txt);
+    openModal(`${r.name}（${r.unit}）的問答內容`, `${r.title}｜交卷 ${r.submitAt}`, `<div class="anstext" style="max-height:60vh;overflow:auto">${esc(r.textLog)}</div>`, [{text:"關閉"}]);
+  });
   $$("[data-del]").forEach(b => b.onclick = () => confirmBox("刪除紀錄", "確定刪除這筆作答紀錄？", "刪除", async ()=>{
     try{ await api("deleteRecords", {ids:[b.dataset.del]}); records = records.filter(r=>r.id!==b.dataset.del); renderRecords(); toast("已刪除"); }
     catch(e){ toast(e.message); }
@@ -623,8 +701,9 @@ $("#btnClearRec").onclick = () => { const list = shownRecords(); if(!list.length
   });
 };
 function recordsCSV(list){
-  const rows = [["測驗名稱","姓名","單位","登入時間","交卷時間","作答時間","答對題數","總題數","分數","是否及格"]];
-  list.forEach(r => rows.push([r.title, r.name, r.unit, r.loginAt, r.submitAt, fmtDur(r.seconds), r.correct, r.total, r.score, r.passed?"及格":"未及格"]));
+  const rows = [["測驗名稱","姓名","單位","登入時間","交卷時間","作答時間","答對題數","總題數","分數","是否及格","問答內容"]];
+  list.forEach(r => rows.push([r.title, r.name, r.unit, r.loginAt, r.submitAt, fmtDur(r.seconds), r.correct, r.total,
+    r.score === null ? "" : r.score, r.passed === null ? "不計分" : (r.passed ? "及格" : "未及格"), r.textLog || ""]));
   return toCSV(rows);
 }
 $("#btnExpRecCsv").onclick = () => shownRecords().length ? download(`作答資料_${stamp()}.csv`, recordsCSV(shownRecords()), "text/csv") : toast("尚無紀錄");
@@ -764,6 +843,7 @@ function validateBank(){
   for(let i=0;i<bank.questions.length;i++){
     const q = bank.questions[i];
     if(!q.text.trim()) return `第 ${i+1} 題沒有題目`;
+    if(q.type === "text") continue;
     if(q.options.some(o=>!String(o).trim())) return `第 ${i+1} 題有空白選項`;
     if(!q.answer.length) return `第 ${i+1} 題沒有設定正確答案`;
   }
@@ -797,7 +877,10 @@ function renderBank(){
   list.innerHTML = bank.questions.map((q,i)=>`
     <div class="card qedit" data-i="${i}">
       <div class="between" style="margin-bottom:8px">
-        <b>第 ${i+1} 題</b>
+        <div class="row" style="gap:12px">
+          <b>第 ${i+1} 題</b>
+          <label class="row" style="gap:6px;font-size:14px;cursor:pointer"><input type="checkbox" data-k="required" ${q.required?"checked":""} style="accent-color:var(--brand);width:16px;height:16px"> 必填</label>
+        </div>
         <div class="row">
           <select data-k="type" style="width:auto;padding:5px 8px">
             ${Object.entries(TYPE_LABEL).map(([k,v])=>`<option value="${k}" ${q.type===k?"selected":""}>${v}</option>`).join("")}
@@ -808,6 +891,7 @@ function renderBank(){
         </div>
       </div>
       <textarea data-k="text" placeholder="題目">${esc(q.text)}</textarea>
+      ${q.type === "text" ? `<div class="hint" style="margin:10px 0 0">問答題：作答者自行輸入文字回答，不計分，內容會記錄在作答紀錄。</div>` : `
       <div class="hint" style="margin:10px 0 6px">選項（勾選正確答案${q.type==="multi"?"，可多選":""}）</div>
       <div class="opts">
         ${q.options.map((o,k)=>`
@@ -818,8 +902,8 @@ function renderBank(){
             ${q.type!=="tf" && q.options.length>2 ? `<button class="btn sm" data-rmopt="${k}">✕</button>` : ""}
           </div>`).join("")}
       </div>
-      ${q.type!=="tf" && q.options.length<LETTERS.length ? `<button class="btn sm" data-act="addopt">＋ 選項</button>` : ""}
-      <label class="f">解析（選填）</label>
+      ${q.type!=="tf" && q.options.length<LETTERS.length ? `<button class="btn sm" data-act="addopt">＋ 選項</button>` : ""}`}
+      <label class="f">${q.type === "text" ? "參考答案／說明（選填）" : "解析（選填）"}</label>
       <input type="text" data-k="explain" value="${esc(q.explain||"")}">
     </div>`).join("");
 
@@ -827,9 +911,13 @@ function renderBank(){
     const i = +box.dataset.i, q = bank.questions[i];
     box.querySelector('[data-k="text"]').oninput = e => { q.text = e.target.value; markDirty(); };
     box.querySelector('[data-k="explain"]').oninput = e => { q.explain = e.target.value; markDirty(); };
+    box.querySelector('[data-k="required"]').onchange = e => { q.required = e.target.checked; markDirty(); };
     box.querySelector('[data-k="type"]').onchange = e => {
+      const was = q.type;
       q.type = e.target.value;
-      if(q.type==="tf"){ q.options = ["是","否"]; q.answer = [q.answer[0]===1?1:0]; }
+      if(q.type==="text"){ q.options = []; q.answer = []; }
+      else if(was==="text"){ q.options = q.type==="tf" ? ["是","否"] : ["","","",""]; q.answer = [0]; }
+      else if(q.type==="tf"){ q.options = ["是","否"]; q.answer = [q.answer[0]===1?1:0]; }
       else if(q.type==="single"){ q.answer = q.answer.length ? [q.answer[0]] : [0]; }
       markDirty(); renderBank();
     };
@@ -857,19 +945,19 @@ $("#setTitle").oninput = e => { bank.title = e.target.value; $("#editTitle").tex
 $("#setOpen").onchange = e => { bank.open = e.target.checked; markDirty(); };
 $("#setPass").oninput = e => { bank.pass = Math.max(0, Math.min(100, parseInt(e.target.value)||0)); markDirty(); };
 $("#setReview").onchange = e => { bank.reviewMode = e.target.value; markDirty(); };
-$("#btnAddQ").onclick = () => { bank.questions.push({type:"single", text:"", options:["","","",""], answer:[0], explain:""}); markDirty(); renderBank(); window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"}); };
+$("#btnAddQ").onclick = () => { bank.questions.push({type:"single", text:"", options:["","","",""], answer:[0], explain:"", required:true}); markDirty(); renderBank(); window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"}); };
 
 /* 匯出／匯入題目 */
 function questionsCSV(){
   const maxOpt = Math.max(2, ...bank.questions.map(q=>q.options.length));
   const head = ["題號","題型","題目"];
   for(let i=0;i<maxOpt;i++) head.push("選項" + LETTERS[i]);
-  head.push("正確答案","解析");
+  head.push("正確答案","解析","必填");
   const rows = [head];
   bank.questions.forEach((q,i)=>{
     const r = [i+1, TYPE_LABEL[q.type], q.text];
     for(let k=0;k<maxOpt;k++) r.push(q.options[k] ?? "");
-    r.push(q.answer.map(a=>LETTERS[a]).join(""), q.explain||"");
+    r.push(q.answer.map(a=>LETTERS[a]).join(""), q.explain||"", q.required ? "是" : "否");
     rows.push(r);
   });
   return toCSV(rows);
@@ -903,17 +991,23 @@ function parseCSVRows(t){
 }
 function parseQCSV(t){
   const rows = parseCSVRows(t), h = rows.shift().map(x=>x.trim());
-  const iType=h.indexOf("題型"), iText=h.indexOf("題目"), iAns=h.indexOf("正確答案"), iExp=h.indexOf("解析");
+  const iType=h.indexOf("題型"), iText=h.indexOf("題目"), iAns=h.indexOf("正確答案"), iExp=h.indexOf("解析"), iReq=h.indexOf("必填");
   const optCols = h.map((x,i)=>/^選項/.test(x)?i:-1).filter(i=>i>=0);
-  const typeMap = {"單選題":"single","複選題":"multi","是非題":"tf"};
+  const typeMap = {"單選題":"single","複選題":"multi","是非題":"tf","問答題":"text"};
   return rows.map(r=>{
+    const type = typeMap[(r[iType]||"").trim()] || "single";
+    const required = iReq >= 0 && (r[iReq]||"").trim() === "是";
+    const explain = iExp>=0 ? (r[iExp]||"") : "";
+    if(type === "text") return { type, text: r[iText]||"", options: [], answer: [], explain, required };
     const options = optCols.map(i=>(r[i]||"").trim()).filter(Boolean);
     const answer = (r[iAns]||"A").toUpperCase().replace(/[^A-J]/g,"").split("").map(L=>LETTERS.indexOf(L)).filter(x=>x<options.length);
-    return { type: typeMap[(r[iType]||"").trim()] || "single", text: r[iText]||"", options, answer: answer.length?answer:[0], explain: iExp>=0 ? (r[iExp]||"") : "" };
+    return { type, text: r[iText]||"", options, answer: answer.length?answer:[0], explain, required };
   });
 }
 
 /* ---------- 啟動 ---------- */
+$("#orgName").textContent = ORG_NAME;
+if(!ORG_NAME) $("#orgName").classList.add("hidden");
 setAdmin(token);
 loadList();
 })();
