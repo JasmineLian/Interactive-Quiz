@@ -400,7 +400,7 @@ function currentUnit(){
   const sel = $("#inUnitSel");
   return (sel.classList.contains("hidden") || sel.value === "__other" ? $("#inUnit").value : sel.value).trim();
 }
-function setHeaderTitle(t){ $("#appTitle").textContent = t || "互動問答測驗"; document.title = t || "互動問答測驗"; }
+
 function notice(msg, bad){ $("#bankNotice").textContent = msg; $("#bankNotice").style.color = bad ? "var(--bad)" : ""; }
 function refreshPick(){
   const qs = meta ? meta.quizzes : [];
@@ -579,13 +579,15 @@ function showResult(r){
   const tagOf = it => it.type === "text"
     ? `<span class="tag neu" style="flex-shrink:0;margin-top:2px">${it.answered ? "已作答" : "未作答"}</span>`
     : `<span class="tag ${it.ok?"ok":"bad"}" style="flex-shrink:0;margin-top:2px">${it.ok?"正確":"錯誤"}</span>`;
-  if(r.review === "result"){
+ const myText = it => String(S.ans[it.no-1] || "").trim();
+ if(r.review === "result"){
     const wrong = r.items.filter(x=>x.type!=="text" && !x.ok).length;
     const graded = r.items.length - textCount;
     const head = !graded ? "以下為你的作答狀況。" : wrong ? `有 ${wrong} 題答錯，以下標示各題結果。` : "選擇題全部答對！";
     $("#rReview").innerHTML = `<p class="hint" style="margin-top:0">${head}</p>` +
       r.items.map(it=>`<div class="row" style="margin-bottom:10px;flex-wrap:nowrap;align-items:flex-start">
-        ${tagOf(it)}<span>${it.no}. ${esc(it.text)}</span></div>`).join("");
+        ${tagOf(it)}<span>${it.no}. ${esc(it.text)}</span></div>` +
+        (it.type === "text" ? `<div class="anstext" style="margin:-4px 0 14px">${myText(it) ? esc(myText(it)) : '<span class="hint">（未作答）</span>'}</div>` : "")).join("");
   } else {
     $("#rReview").innerHTML = r.items.map(it=>`
       <div class="item">
