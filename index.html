@@ -400,7 +400,7 @@ function currentUnit(){
   const sel = $("#inUnitSel");
   return (sel.classList.contains("hidden") || sel.value === "__other" ? $("#inUnit").value : sel.value).trim();
 }
-
+function setHeaderTitle(t){ $("#appTitle").textContent = t || "互動問答測驗"; document.title = t || "互動問答測驗"; }
 function notice(msg, bad){ $("#bankNotice").textContent = msg; $("#bankNotice").style.color = bad ? "var(--bad)" : ""; }
 function refreshPick(){
   const qs = meta ? meta.quizzes : [];
